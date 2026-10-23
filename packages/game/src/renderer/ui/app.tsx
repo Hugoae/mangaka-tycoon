@@ -1,5 +1,5 @@
-import { ConnectedHub } from "./hub/connected-hub";
+import { GameScreen } from "./game-screen";
 
 export function App() {
-  return <ConnectedHub />;
+  return <GameScreen />;
 }

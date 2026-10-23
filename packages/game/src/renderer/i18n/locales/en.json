@@ -1,10 +1,78 @@
 {
-  "hub": {
+  "app": {
+    "contentError": {
+      "title": "The game data could not be loaded",
+      "hint": "Check the data files (packages/content/data), then restart the game."
+    }
+  },
+  "hud": {
     "date": "{{month}} {{year}} · week {{week}}",
-    "nextWeek": "Next week",
-    "eventLog": "Log"
+    "money": "{{amount}} ¥",
+    "fans": "{{value}} fans",
+    "fatigue": "Fatigue",
+    "otherLanguage": "FR",
+    "otherLanguageName": "Passer en français"
+  },
+  "newSeries": {
+    "title": "Start a new series",
+    "intro": "Theme, audience and art style are chosen once and for all.",
+    "titleLabel": "Title",
+    "defaultTitle": "My first series",
+    "theme": "Theme",
+    "target": "Audience",
+    "artStyle": "Art style",
+    "start": "Start the series",
+    "cancelledNotice": "\"{{title}}\" was cancelled by the magazine. Time to start over with a new project."
+  },
+  "production": {
+    "title": "\"{{title}}\" · chapter {{chapter}}",
+    "energy": "Energy: {{used}} / {{available}}",
+    "quality": "Estimated quality: {{quality}} / {{max}}",
+    "publish": "Publish the chapter",
+    "rest": "Rest this week",
+    "restHint": "No chapter: fatigue goes down, but some fans drift away.",
+    "competitors": "The magazine (average strength of the series)",
+    "you": "You (estimate)"
+  },
+  "slider": {
+    "label": "{{axis}} ({{share}}%)",
+    "story": "Story",
+    "art": "Art",
+    "characters": "Characters",
+    "worldbuilding": "Worldbuilding",
+    "pacing": "Pacing"
+  },
+  "report": {
+    "title": "Last result",
+    "axis": "{{axis}}: {{points}} pts → {{contribution}}",
+    "base": "Base quality: {{value}}",
+    "multipliers": "Trend ×{{trend}} · Audience ×{{target}} · Style ×{{style}} · Fatigue ×{{fatigue}}"
   },
   "event": {
-    "weekAdvanced": "A new week begins."
+    "seriesStarted": "New series started: \"{{title}}\".",
+    "chapterPublished": "Chapter published: quality {{quality}}, rank #{{rank}} of {{total}}, {{fansDelta}} fans (total: {{fans}}).",
+    "weekRested": "Rest week: fatigue -{{fatigueRecovered}}, fans lost: {{fansLost}}.",
+    "monthClosed": "Month end: {{tomesSold}} tomes sold, {{revenue}} ¥ in sales, {{expenses}} ¥ in expenses. Money: {{money}} ¥.",
+    "seriesCancelled": "The magazine cancels \"{{title}}\": too many bad rankings in a row.",
+    "bankrupt": "Bankruptcy: only {{money}} ¥ left.",
+    "commandRejected": "Action not possible: {{reason}}"
+  },
+  "rejection": {
+    "gameOver": "the game is over.",
+    "noRunningSeries": "no series is running.",
+    "seriesAlreadyRunning": "a series is already running.",
+    "invalidTitle": "the title is empty or too long.",
+    "unknownContent": "unknown game data.",
+    "invalidSliders": "invalid slider values.",
+    "overBudget": "not enough energy for these sliders."
+  },
+  "gameOver": {
+    "title": "Bankruptcy",
+    "intro": "The accounts are in the red: your career ends here.",
+    "weeks": "Weeks survived: {{value}}",
+    "chapters": "Chapters published: {{value}}",
+    "peakFans": "Peak fans: {{value}}",
+    "money": "Final money: {{amount}} ¥",
+    "newGame": "New game"
   }
 }

@@ -1,10 +1,78 @@
 {
-  "hub": {
+  "app": {
+    "contentError": {
+      "title": "Impossible de charger les données du jeu",
+      "hint": "Vérifiez les fichiers de données (packages/content/data) puis relancez le jeu."
+    }
+  },
+  "hud": {
     "date": "{{month}} {{year}} · semaine {{week}}",
-    "nextWeek": "Semaine suivante",
-    "eventLog": "Journal"
+    "money": "{{amount}} ¥",
+    "fans": "{{value}} fans",
+    "fatigue": "Fatigue",
+    "otherLanguage": "EN",
+    "otherLanguageName": "Switch to English"
+  },
+  "newSeries": {
+    "title": "Lancer une nouvelle série",
+    "intro": "Thème, public et style de dessin se choisissent une fois pour toutes.",
+    "titleLabel": "Titre",
+    "defaultTitle": "Ma première série",
+    "theme": "Thème",
+    "target": "Public",
+    "artStyle": "Style de dessin",
+    "start": "Lancer la série",
+    "cancelledNotice": "« {{title}} » a été arrêtée par le magazine. Il est temps de repartir sur un nouveau projet."
+  },
+  "production": {
+    "title": "« {{title}} » · chapitre {{chapter}}",
+    "energy": "Énergie : {{used}} / {{available}}",
+    "quality": "Qualité estimée : {{quality}} / {{max}}",
+    "publish": "Publier le chapitre",
+    "rest": "Se reposer cette semaine",
+    "restHint": "Pas de chapitre : la fatigue baisse, mais des fans s'éloignent.",
+    "competitors": "Le magazine (force moyenne des séries)",
+    "you": "Vous (estimation)"
+  },
+  "slider": {
+    "label": "{{axis}} ({{share}} %)",
+    "story": "Scénario",
+    "art": "Dessin",
+    "characters": "Personnages",
+    "worldbuilding": "Univers",
+    "pacing": "Rythme"
+  },
+  "report": {
+    "title": "Dernier résultat",
+    "axis": "{{axis}} : {{points}} pts → {{contribution}}",
+    "base": "Qualité de base : {{value}}",
+    "multipliers": "Tendance ×{{trend}} · Public ×{{target}} · Style ×{{style}} · Fatigue ×{{fatigue}}"
   },
   "event": {
-    "weekAdvanced": "Une nouvelle semaine commence."
+    "seriesStarted": "Nouvelle série lancée : « {{title}} ».",
+    "chapterPublished": "Chapitre publié : qualité {{quality}}, classement n°{{rank}} sur {{total}}, {{fansDelta}} fans (total : {{fans}}).",
+    "weekRested": "Semaine de repos : fatigue -{{fatigueRecovered}}, fans perdus : {{fansLost}}.",
+    "monthClosed": "Fin de mois : {{tomesSold}} tomes vendus, {{revenue}} ¥ de ventes, {{expenses}} ¥ de dépenses. Argent : {{money}} ¥.",
+    "seriesCancelled": "Le magazine arrête « {{title}} » : trop de mauvais classements d'affilée.",
+    "bankrupt": "Faillite : il ne reste que {{money}} ¥.",
+    "commandRejected": "Action impossible : {{reason}}"
+  },
+  "rejection": {
+    "gameOver": "la partie est terminée.",
+    "noRunningSeries": "aucune série en cours.",
+    "seriesAlreadyRunning": "une série est déjà en cours.",
+    "invalidTitle": "le titre est vide ou trop long.",
+    "unknownContent": "donnée de jeu inconnue.",
+    "invalidSliders": "valeurs de curseurs invalides.",
+    "overBudget": "pas assez d'énergie pour ces curseurs."
+  },
+  "gameOver": {
+    "title": "Faillite",
+    "intro": "Les comptes sont dans le rouge : votre carrière s'arrête ici.",
+    "weeks": "Semaines tenues : {{value}}",
+    "chapters": "Chapitres publiés : {{value}}",
+    "peakFans": "Record de fans : {{value}}",
+    "money": "Argent final : {{amount}} ¥",
+    "newGame": "Nouvelle partie"
   }
 }

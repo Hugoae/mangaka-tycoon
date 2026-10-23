@@ -8,6 +8,9 @@
   --color-line: #f0e8d8;
   --color-text: #f0e8d8;
   --color-muted: #9b93ad;
+  --color-accent: #e0a85c;
+  --color-danger: #d05a4e;
+  --color-field: #120f1c;
 }
 
 html,
@@ -63,28 +66,140 @@ body {
   line-height: 1.3;
 }
 
-.hub {
+/* Top bar */
+.hud {
   box-sizing: border-box;
   position: absolute;
-  top: calc(8 * var(--px));
+  top: 0;
+  left: 0;
+  right: 0;
+  height: calc(20 * var(--px));
+  display: flex;
+  align-items: center;
+  gap: calc(14 * var(--px));
+  padding: 0 calc(8 * var(--px));
+  border-bottom: var(--px) solid var(--color-line);
+  background: var(--color-panel);
+}
+
+.hud__money {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.hud__fatigue {
+  display: flex;
+  align-items: center;
+  gap: calc(4 * var(--px));
+}
+
+.hud__language {
+  margin-left: auto;
+  padding: 0 calc(5 * var(--px));
+  border: var(--px) solid var(--color-line);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.hud__language:hover,
+.hud__language:focus-visible {
+  background: var(--color-line);
+  color: var(--color-panel);
+}
+
+.gauge {
+  appearance: none;
+  box-sizing: border-box;
+  width: calc(64 * var(--px));
+  height: calc(7 * var(--px));
+  border: var(--px) solid var(--color-line);
+  background: var(--color-field);
+}
+
+.gauge::-webkit-progress-bar {
+  background: var(--color-field);
+}
+
+.gauge::-webkit-progress-value {
+  background: var(--color-accent);
+}
+
+/* Right-hand panel: the current decision */
+.panel {
+  box-sizing: border-box;
+  position: absolute;
+  top: calc(26 * var(--px));
   right: calc(8 * var(--px));
+  bottom: calc(8 * var(--px));
   width: calc(300 * var(--px));
   display: flex;
   flex-direction: column;
-  align-items: stretch;
-  gap: calc(8 * var(--px));
+  gap: calc(5 * var(--px));
   padding: calc(8 * var(--px));
+  overflow: hidden;
   border: var(--px) solid var(--color-line);
   background: var(--color-panel);
 }
 
-.hub__date {
+.panel__title {
   margin: 0;
-  font-size: calc(12 * var(--px));
+  font-size: calc(11 * var(--px));
   font-weight: 600;
 }
 
-.hub__next-week {
+.panel__subtitle {
+  margin: calc(3 * var(--px)) 0 0;
+  font-size: calc(9 * var(--px));
+  font-weight: 600;
+  color: var(--color-muted);
+}
+
+.panel__muted,
+.panel__line,
+.panel__notice {
+  margin: 0;
+}
+
+.panel__muted {
+  color: var(--color-muted);
+}
+
+.panel__line--strong {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+.panel__notice {
+  color: var(--color-danger);
+}
+
+.panel__actions {
+  display: flex;
+  gap: calc(6 * var(--px));
+}
+
+.panel__stats,
+.panel__errors {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.panel--error {
+  left: calc(8 * var(--px));
+  width: auto;
+}
+
+.panel__errors {
+  overflow: hidden;
+  color: var(--color-danger);
+  font-family: ui-monospace, monospace;
+}
+
+/* Buttons */
+.button {
   padding: calc(4 * var(--px)) calc(8 * var(--px));
   border: var(--px) solid var(--color-line);
   background: transparent;
@@ -93,14 +208,173 @@ body {
   cursor: pointer;
 }
 
-.hub__next-week:hover,
-.hub__next-week:focus-visible {
+.button:hover:not(:disabled),
+.button:focus-visible,
+.button--primary {
   background: var(--color-line);
   color: var(--color-panel);
 }
 
-.hub__log ul {
+.button--primary:hover:not(:disabled),
+.button--primary:focus-visible {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Text field */
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: calc(2 * var(--px));
+}
+
+.field__label {
+  color: var(--color-muted);
+}
+
+.field__input {
+  box-sizing: border-box;
+  padding: calc(2 * var(--px)) calc(4 * var(--px));
+  border: var(--px) solid var(--color-line);
+  background: var(--color-field);
+  color: inherit;
+  font: inherit;
+}
+
+/* Single choice, styled as buttons */
+.choices {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.choices__legend {
+  padding: 0;
+  color: var(--color-muted);
+}
+
+.choices__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(4 * var(--px));
+  margin-top: calc(2 * var(--px));
+}
+
+.choices__item {
+  position: relative;
+  cursor: pointer;
+}
+
+.choices__input {
+  position: absolute;
+  opacity: 0;
+  width: var(--px);
+  height: var(--px);
+}
+
+.choices__label {
+  display: block;
+  padding: calc(2 * var(--px)) calc(6 * var(--px));
+  border: var(--px) solid var(--color-line);
+}
+
+.choices__input:checked + .choices__label {
+  background: var(--color-line);
+  color: var(--color-panel);
+}
+
+.choices__input:focus-visible + .choices__label {
+  outline: var(--px) dashed var(--color-accent);
+  outline-offset: var(--px);
+}
+
+/* The five effort sliders */
+.slider {
+  display: grid;
+  grid-template-columns: calc(112 * var(--px)) 1fr calc(20 * var(--px));
+  align-items: center;
+  gap: calc(6 * var(--px));
+}
+
+.slider__value {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.slider__input {
+  appearance: none;
+  box-sizing: border-box;
+  width: 100%;
+  height: calc(5 * var(--px));
+  margin: 0;
+  border: var(--px) solid var(--color-line);
+  background: var(--color-field);
+  cursor: pointer;
+}
+
+.slider__input::-webkit-slider-thumb {
+  appearance: none;
+  width: calc(5 * var(--px));
+  height: calc(11 * var(--px));
+  background: var(--color-accent);
+}
+
+.slider__input:focus-visible {
+  outline: var(--px) dashed var(--color-accent);
+  outline-offset: calc(2 * var(--px));
+}
+
+/* The magazine's ranking */
+.magazine {
   margin: 0;
   padding: 0;
   list-style: none;
+  color: var(--color-muted);
+}
+
+.magazine__row {
+  display: flex;
+  justify-content: space-between;
+}
+
+.magazine__row--you {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* Result of the last action, over the scene */
+.report {
+  box-sizing: border-box;
+  position: absolute;
+  top: calc(26 * var(--px));
+  left: calc(8 * var(--px));
+  width: calc(316 * var(--px));
+  max-height: calc(188 * var(--px));
+  padding: calc(6 * var(--px)) calc(8 * var(--px));
+  overflow: hidden;
+  border: var(--px) solid var(--color-line);
+  background: var(--color-panel);
+}
+
+.report__list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.report__list li + li {
+  margin-top: calc(2 * var(--px));
+}
+
+.report__list--detail {
+  margin-top: calc(4 * var(--px));
+  color: var(--color-muted);
+  font-size: calc(8 * var(--px));
+  line-height: 1.2;
 }

@@ -6,18 +6,26 @@ import { Application, Sprite, Texture } from "pixi.js";
 import { GAME_HEIGHT, GAME_WIDTH } from "../stage/integer-scale";
 import type { GameStore } from "../store/game-store";
 import { sceneViewOf } from "./scene-view";
-import type { SceneView } from "./scene-view";
+import type { Mood, SceneView } from "./scene-view";
 
 const COLOR = {
   wall: 0x2b2640,
   floor: 0x3d3355,
   desk: 0x8a5a3c,
-  figure: 0xf0e8d8,
+  pages: 0xf7f2e6,
 };
 
-const FLOOR_Y = 240;
-const FIGURE_START_X = 40;
-const FIGURE_STEP_PIXELS = 12;
+/** The figure turns from cream to red as the mangaka wears out. */
+const FIGURE_COLOR: Readonly<Record<Mood, number>> = {
+  fresh: 0xf0e8d8,
+  tired: 0xe0a85c,
+  exhausted: 0xd05a4e,
+};
+
+const FLOOR_Y = 292;
+const DESK = { x: 24, width: 120, height: 24 };
+const FIGURE = { x: 56, width: 16, height: 40 };
+const PAGE_PILE = { x: 108, width: 24, pixelsPerPage: 2 };
 
 /** A coloured rectangle: placeholder art until real sprites exist (AGENTS.md section 6). */
 function block(color: number, x: number, y: number, width: number, height: number): Sprite {
@@ -52,12 +60,16 @@ export async function createGameScene(host: HTMLElement, store: GameStore): Prom
   host.appendChild(app.canvas);
 
   const floor = block(COLOR.floor, 0, FLOOR_Y, GAME_WIDTH, GAME_HEIGHT - FLOOR_Y);
-  const desk = block(COLOR.desk, 24, FLOOR_Y - 24, 120, 24);
-  const figure = block(COLOR.figure, FIGURE_START_X, FLOOR_Y - 64, 16, 40);
-  app.stage.addChild(floor, desk, figure);
+  const desk = block(COLOR.desk, DESK.x, FLOOR_Y - DESK.height, DESK.width, DESK.height);
+  const figure = block(FIGURE_COLOR.fresh, FIGURE.x, FLOOR_Y - 64, FIGURE.width, FIGURE.height);
+  const pages = block(COLOR.pages, PAGE_PILE.x, FLOOR_Y - DESK.height, PAGE_PILE.width, 0);
+  app.stage.addChild(floor, desk, figure, pages);
 
   const apply = (view: SceneView): void => {
-    figure.x = FIGURE_START_X + view.figureStep * FIGURE_STEP_PIXELS;
+    figure.tint = FIGURE_COLOR[view.mood];
+    const height = view.pages * PAGE_PILE.pixelsPerPage;
+    pages.height = height;
+    pages.y = FLOOR_Y - DESK.height - height;
   };
   apply(sceneViewOf(store.getState()));
   const unsubscribe = store.subscribe((state) => {

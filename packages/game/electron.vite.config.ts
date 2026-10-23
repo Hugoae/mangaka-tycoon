@@ -1,3 +1,5 @@
+import { fileURLToPath } from "node:url";
+
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "electron-vite";
 
@@ -18,5 +20,10 @@ export default defineConfig({
       rolldownOptions: { output: { format: "cjs", entryFileNames: "[name].cjs" } },
     },
   },
-  renderer: { plugins: [react()] },
+  renderer: {
+    // The game data is copied as-is next to the page (`/base/balance.jsonc`...) and read at startup,
+    // never bundled: it is data, and modders will edit it without a build (AGENTS.md 5.4).
+    publicDir: fileURLToPath(new URL("../content/data", import.meta.url)),
+    plugins: [react()],
+  },
 });

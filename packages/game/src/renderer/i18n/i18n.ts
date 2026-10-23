@@ -1,18 +1,19 @@
+import { LANGUAGES } from "@mangaka/core";
+import type { LanguageCode } from "@mangaka/core";
 import { createInstance } from "i18next";
 import type { i18n } from "i18next";
 
 import en from "./locales/en.json";
 import fr from "./locales/fr.json";
+import { DEFAULT_LANGUAGE } from "./language";
 
 /** Shape of a locale, taken from French: a missing key in another locale is a compile error. */
 export type Locale = typeof fr;
 
 const english: Locale = en;
 
-export const LANGUAGES = ["fr", "en"] as const;
-export type Language = (typeof LANGUAGES)[number];
-
-export const DEFAULT_LANGUAGE: Language = "fr";
+export { DEFAULT_LANGUAGE, LANGUAGES };
+export type Language = LanguageCode;
 
 export const resources = {
   fr: { translation: fr },
