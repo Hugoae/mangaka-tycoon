@@ -1,0 +1,14 @@
+# Conventional Commits (AGENTS.md 9.5): "type(scope): subject", first line at most 100 characters.
+pattern='^(feat|fix|docs|style|refactor|perf|test|build|ci|chore|revert)(\([a-z0-9-]+\))?!?: .{1,90}$'
+first_line=$(head -n 1 "$1")
+
+case "$first_line" in
+  Merge\ *|Revert\ \"*|fixup!\ *|squash!\ *) exit 0 ;;
+esac
+
+if ! printf '%s' "$first_line" | grep -Eq "$pattern"; then
+  echo "Invalid commit message: \"$first_line\""
+  echo "Expected Conventional Commits, e.g. \"feat(core): add calendar functions\"."
+  echo "Types: feat, fix, docs, style, refactor, perf, test, build, ci, chore, revert."
+  exit 1
+fi

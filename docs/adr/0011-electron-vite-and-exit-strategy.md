@@ -10,7 +10,7 @@ Electron apps need three build targets (main, preload, renderer) and a packaging
 Electron Forge is the officially maintained alternative, but it is oriented towards Squirrel installers and auto-update, which matter little for a Steam release.
 
 The main risk of `electron-vite` is a very small maintainer base. A build tool that nobody maintains would block Electron upgrades,
-which are security-relevant. We therefore decide the exit plan *before* adopting the tool.
+which are security-relevant. We therefore decide the exit plan _before_ adopting the tool.
 
 ## Decision
 
@@ -27,12 +27,12 @@ Adopt **electron-vite** (dev server, HMR, build of the three targets) and **elec
 
 If a trigger below happens, replace `electron-vite` by plain tools **without changing application code**:
 
-| Target | Replacement |
-|---|---|
-| Renderer | Plain **Vite** with the same plugins (React) and the same aliases; dev server on a local port; production build into `out/renderer`. |
+| Target           | Replacement                                                                                                                                                                    |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Renderer         | Plain **Vite** with the same plugins (React) and the same aliases; dev server on a local port; production build into `out/renderer`.                                           |
 | Main and preload | **Vite library mode** (or `esbuild`) producing `out/main/index.js` and `out/preload/index.js` in ESM/CJS as required by Electron, with `electron` and Node built-ins external. |
-| Dev loop | A small script that starts the Vite dev server, builds main/preload in watch mode, and launches Electron pointing at the dev URL. |
-| Packaging | Unchanged (`electron-builder`). |
+| Dev loop         | A small script that starts the Vite dev server, builds main/preload in watch mode, and launches Electron pointing at the dev URL.                                              |
+| Packaging        | Unchanged (`electron-builder`).                                                                                                                                                |
 
 Estimated effort: one to two days, thanks to rules 1 to 4.
 

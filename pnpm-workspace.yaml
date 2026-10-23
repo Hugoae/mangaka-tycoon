@@ -1,6 +1,6 @@
 packages:
-  - 'packages/*'
-  - 'tools'
+  - "packages/*"
+  - "tools"
 
 # Supply-chain guard: refuse any version published less than 3 days ago
 # (value in minutes). Strict mode is on by default once the value is explicit,

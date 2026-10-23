@@ -10,23 +10,23 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
 
 ## Decisions validated in Phase A
 
-| Topic | Decision |
-|---|---|
-| TypeScript | Pinned to `~6.0.x` everywhere (typescript-eslint does not support TS 7 yet). |
-| Content format | JSONC (comments allowed), read with `jsonc-parser`. |
-| Electron | Latest 44.x (not 45, for consistency with `minimumReleaseAge`). Upgrade to 45 in a few weeks. |
+| Topic                | Decision                                                                                                                       |
+| -------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
+| TypeScript           | Pinned to `~6.0.x` everywhere (typescript-eslint does not support TS 7 yet).                                                   |
+| Content format       | JSONC (comments allowed), read with `jsonc-parser`.                                                                            |
+| Electron             | Latest 44.x (not 45, for consistency with `minimumReleaseAge`). Upgrade to 45 in a few weeks.                                  |
 | Dependency direction | `core` defines the types it consumes; `content` imports them (types only). `core -> nothing`, `content -> core (types) + zod`. |
-| Immutability | `immer`. |
-| PRNG | `sfc32`, one stream per `(week, system)` derived from the seed. |
-| UI store | Zustand 5. |
-| i18n | i18next + react-i18next. |
-| Platform access | `PlatformApi` interface, implemented through the Electron preload. |
-| Protocol | Custom `app://` protocol in production (no `file://`). |
-| Internal resolution | 640x360, integer scaling only, borderless fullscreen by default. |
-| Calendar | 48 weeks per year, 4 weeks per month (option B). |
-| Scaling | `force-device-scale-factor=1`; pixel-perfect rendering must be verified at 100%, 125% and 150% Windows scaling. |
-| Licence | Proprietary, all rights reserved. |
-| Repository | https://github.com/Hugoae/mangaka-tycoon |
+| Immutability         | `immer`.                                                                                                                       |
+| PRNG                 | `sfc32`, one stream per `(week, system)` derived from the seed.                                                                |
+| UI store             | Zustand 5.                                                                                                                     |
+| i18n                 | i18next + react-i18next.                                                                                                       |
+| Platform access      | `PlatformApi` interface, implemented through the Electron preload.                                                             |
+| Protocol             | Custom `app://` protocol in production (no `file://`).                                                                         |
+| Internal resolution  | 640x360, integer scaling only, borderless fullscreen by default.                                                               |
+| Calendar             | 48 weeks per year, 4 weeks per month (option B).                                                                               |
+| Scaling              | `force-device-scale-factor=1`; pixel-perfect rendering must be verified at 100%, 125% and 150% Windows scaling.                |
+| Licence              | Proprietary, all rights reserved.                                                                                              |
+| Repository           | https://github.com/Hugoae/mangaka-tycoon                                                                                       |
 
 ## Open design questions (to settle with Hugo before M3, never guess)
 
@@ -68,7 +68,25 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
   48-week calendar, 640x360, version policy exceptions). Resolved questions removed from section 14.
   - ADR 0010 stays "pending verification" until the skeleton proves pixel-perfect rendering at 100%, 125% and 150%.
 
+- Commit 6: ESLint, Prettier, Husky, lint-staged.
+  - ESLint 10 flat config (`eslint.config.js`): `typescript-eslint` `strictTypeChecked` + `stylisticTypeChecked`, `reportUnusedDisableDirectives: error`,
+    `--max-warnings 0`. Bans: `as` assertions (`as const` allowed), `any`, `!`, `@ts-ignore`, default exports, `console`, files over 300 lines.
+    Disable comments need a description and a matching enable (`eslint-comments`).
+  - `core`: forbidden imports (react, pixi, electron, zustand, i18next, all Node built-ins, `@mangaka/*`), forbidden globals (`Date`, `window`, `process`, `fetch`, ...),
+    `Math.random`, classes. `core/src/systems`: `no-magic-numbers` (0, 1, -1 allowed). `content`: no DOM/Node imports.
+  - `eslint-plugin-boundaries` (7.2.0, as 7.2.1 and 7.3.0 are younger than 3 days): allow-list in `eslint/boundaries.js`
+    (core -> immer, zod; content -> zod, jsonc-parser, types of core; nothing imports game or tools).
+    Lessons learned: the plugin only checks local files unless `checkAllOrigins: true`, and it classifies `@mangaka/*` imports as _external_ modules.
+  - Verified with throw-away files (deleted): every rule above fires. Boundaries policies were first silent, and fixed after this check.
+  - Prettier (`printWidth: 100`, `endOfLine: lf`), `AGENTS.md` excluded. The whole repository was formatted (this also fixes CRLF in the working tree).
+  - Husky: `pre-commit` runs lint-staged then `pnpm typecheck`; `commit-msg` rejects non Conventional Commits messages (no extra dependency).
+  - Scripts: `pnpm lint`, `pnpm format`, `pnpm format:check`, `pnpm typecheck`.
+
 ## Open technical points
+
+- The lint and boundary checks were verified by hand. They become automated tests with Vitest (next commit).
+- `boundaries` rules for the layers inside `game` (`ui`, `store`, `scene`, `main`, `preload`) are added with the Electron skeleton, once those folders exist.
+- Naming conventions (kebab-case files) are not enforced yet; adding `eslint-plugin-unicorn` for `filename-case` needs a justification (dependency size).
 
 - `tools` will run TypeScript on Node or through a runner (`tsx` / Vite). Relative imports are extensionless for now (bundler resolution);
   decide with the simulation bot (M3) whether to run through a bundler-aware runner or require `.ts` extensions.
@@ -76,5 +94,5 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
 
 ## Next step
 
-- Commit 6: ESLint (flat config, typescript-eslint strict, `core` restrictions, boundaries), Prettier, Husky + lint-staged.
-- Then, in order of section 11.2: Vitest + coverage threshold, CI, Cursor rules, `docs/ARCHITECTURE.md`, Electron skeleton, smoke tests.
+- Commit 7: Vitest with a coverage threshold on `core`, and automated tests proving that lint and boundary rules fail when violated.
+- Then, in order of section 11.2: CI, Cursor rules, `docs/ARCHITECTURE.md`, Electron skeleton, smoke tests.

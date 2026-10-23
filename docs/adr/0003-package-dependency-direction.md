@@ -18,7 +18,7 @@ The domain must not depend on the disk format.
 4. Pure libraries are allowed in `core` (`immer`, `zod` for save validation). The ban targets internal packages, UI, rendering,
    DOM, Node and I/O.
 5. A single `content.loadPacks(rawPacks)` function validates, merges and cross-checks references (every `themeId` exists)
-   for base content and mods alike. Only *reading files* differs by origin (bundled by Vite, read by the Electron main process, read by `fs` in tools).
+   for base content and mods alike. Only _reading files_ differs by origin (bundled by Vite, read by the Electron main process, read by `fs` in tools).
 
 Enforcement is layered, so no single tool is a point of failure:
 

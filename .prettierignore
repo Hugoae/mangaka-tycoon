@@ -1,0 +1,9 @@
+node_modules/
+dist/
+out/
+release/
+coverage/
+pnpm-lock.yaml
+
+# Reference document owned by Hugo: formatted by hand.
+AGENTS.md
