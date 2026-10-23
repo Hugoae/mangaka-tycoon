@@ -1,0 +1,51 @@
+// The other series of the weekly magazine, fictional parodies (AGENTS.md sections 4 and 13).
+// Each week a competitor scores `baseStrength + growthPerYear * years + a random swing of +-volatility`,
+// on the same 0-100 scale as the player's chapter quality.
+//
+// TODO(balance): PROVISIONAL. Names, count and strengths are Hugo's call (5 to 8 series are planned).
+{
+  "competitors": [
+    {
+      "id": "dragon-orb",
+      "name": { "fr": "Dragon Orb", "en": "Dragon Orb" },
+      "baseStrength": 38,
+      "growthPerYear": 3.5,
+      "volatility": 8,
+    },
+    {
+      "id": "northern-comet",
+      "name": { "fr": "Le Poing de la Comète du Nord", "en": "Fist of the Northern Comet" },
+      "baseStrength": 52,
+      "growthPerYear": 1.5,
+      "volatility": 7,
+    },
+    {
+      "id": "captain-swallow",
+      "name": { "fr": "Capitaine Hirondelle", "en": "Captain Swallow" },
+      "baseStrength": 46,
+      "growthPerYear": 1.0,
+      "volatility": 6,
+    },
+    {
+      "id": "zenith-knights",
+      "name": { "fr": "Les Chevaliers du Zénith", "en": "Zenith Knights" },
+      "baseStrength": 42,
+      "growthPerYear": 2.0,
+      "volatility": 9,
+    },
+    {
+      "id": "doctor-crash",
+      "name": { "fr": "Docteur Crash", "en": "Doctor Crash" },
+      "baseStrength": 34,
+      "growthPerYear": 0.5,
+      "volatility": 10,
+    },
+    {
+      "id": "shadow-cat",
+      "name": { "fr": "Chat de l'Ombre", "en": "Shadow Cat" },
+      "baseStrength": 28,
+      "growthPerYear": 1.0,
+      "volatility": 6,
+    },
+  ],
+}

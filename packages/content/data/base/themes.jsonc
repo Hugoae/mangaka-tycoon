@@ -1,0 +1,57 @@
+// Themes of a series. Names are parodies, never real brands (AGENTS.md section 4).
+//
+// TODO(balance): PROVISIONAL. The weights, the trends and even the list of themes are Hugo's call.
+{
+  "themes": [
+    {
+      "id": "adventure",
+      "name": { "fr": "Aventure", "en": "Adventure" },
+      // How much each slider counts for this theme (relative, they do not need to add up to 1).
+      "axisWeights": {
+        "story": 0.26,
+        "art": 0.08,
+        "characters": 0.16,
+        "worldbuilding": 0.42,
+        "pacing": 0.08,
+      },
+      // Quality multiplier for 1980, 1981, ... 1989 (the last value is kept after that).
+      "trendByYear": [1.0, 1.0, 1.0, 1.05, 1.05, 1.1, 1.1, 1.1, 1.05, 1.0],
+    },
+    {
+      "id": "sport",
+      "name": { "fr": "Sport", "en": "Sports" },
+      "axisWeights": {
+        "story": 0.15,
+        "art": 0.1,
+        "characters": 0.3,
+        "worldbuilding": 0.05,
+        "pacing": 0.4,
+      },
+      "trendByYear": [1.05, 1.05, 1.0, 1.0, 0.95, 0.95, 1.0, 1.0, 1.05, 1.05],
+    },
+    {
+      "id": "comedy",
+      "name": { "fr": "Comédie", "en": "Comedy" },
+      "axisWeights": {
+        "story": 0.25,
+        "art": 0.1,
+        "characters": 0.35,
+        "worldbuilding": 0.05,
+        "pacing": 0.25,
+      },
+      "trendByYear": [1.1, 1.1, 1.05, 1.0, 0.95, 0.9, 0.9, 0.95, 1.0, 1.0],
+    },
+    {
+      "id": "combat",
+      "name": { "fr": "Combat", "en": "Fighting" },
+      "axisWeights": {
+        "story": 0.1,
+        "art": 0.35,
+        "characters": 0.2,
+        "worldbuilding": 0.05,
+        "pacing": 0.3,
+      },
+      "trendByYear": [0.95, 1.0, 1.05, 1.1, 1.15, 1.15, 1.1, 1.05, 1.0, 1.0],
+    },
+  ],
+}

@@ -1,0 +1,22 @@
+// Art styles. `themeAffinity` is a quality multiplier per theme; a missing theme counts as 1.
+//
+// TODO(balance): PROVISIONAL.
+{
+  "artStyles": [
+    {
+      "id": "classic",
+      "name": { "fr": "Manga classique", "en": "Classic manga" },
+      "themeAffinity": { "adventure": 1.0, "sport": 1.0, "comedy": 0.95, "combat": 1.05 },
+    },
+    {
+      "id": "cartoon",
+      "name": { "fr": "Cartoon", "en": "Cartoon" },
+      "themeAffinity": { "adventure": 1.0, "sport": 1.0, "comedy": 1.15, "combat": 0.85 },
+    },
+    {
+      "id": "realistic",
+      "name": { "fr": "Réaliste", "en": "Realistic" },
+      "themeAffinity": { "adventure": 1.05, "sport": 1.1, "comedy": 0.85, "combat": 1.1 },
+    },
+  ],
+}

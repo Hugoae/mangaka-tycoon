@@ -1,0 +1,70 @@
+// Every number that tunes the simulation. None of them is hard-coded in the code (AGENTS.md 9, 10.5).
+//
+// TODO(balance): ALL values below are PROVISIONAL placeholders chosen to make the first playable
+// prototype work. Balancing and game design belong to Hugo: change anything here freely, no code
+// needs to change. Money is in a fictional currency.
+{
+  // Money at the start of a new game.
+  "startingMoney": 250000,
+
+  "slider": {
+    // Highest value of one slider.
+    "max": 60,
+    // Diminishing returns: points on one slider are worth (points / max) ^ exponent.
+    // 1 = linear, closer to 0 = the first points matter much more than the last ones.
+    "exponent": 0.7,
+  },
+
+  "energy": {
+    // Slider points that can be spent in a week without fatigue.
+    "base": 100,
+    // Share of that energy lost at maximum fatigue (0 to 1).
+    "fatiguePenalty": 0.5,
+  },
+
+  "quality": {
+    // Quality is a score from 0 to this value.
+    "max": 100,
+    // Share of the quality lost at maximum fatigue (0 to 1).
+    "fatiguePenalty": 0.3,
+  },
+
+  "fatigue": {
+    "max": 100,
+    // Fatigue gained by publishing a chapter, whatever the effort...
+    "perChapter": 8,
+    // ...plus this much per slider point spent.
+    "perEnergyPoint": 0.12,
+    // Fatigue lost in a week of rest.
+    "restRecovery": 30,
+  },
+
+  "magazine": {
+    // Fans won (or lost, if negative) per place in the weekly ranking, from first place down.
+    // One entry per place: the 6 competing series plus the player.
+    "rankFans": [120, 80, 50, 25, 5, -20, -50],
+    // Fans lost in a week without a chapter.
+    "restFanLoss": 40,
+    // A rank at or below this place counts as a bad week...
+    "cancelWorstRank": 6,
+    // ...and the series is cancelled after this many bad weeks in a row.
+    "cancelAfterBadWeeks": 3,
+  },
+
+  "sales": {
+    // Tomes sold each month per fan.
+    "tomesPerFan": 0.5,
+    // Money earned per tome.
+    "tomePrice": 500,
+  },
+
+  "expenses": {
+    // Living costs paid at the end of every month.
+    "monthly": 50000,
+  },
+
+  "series": {
+    "startingFans": 0,
+    "titleMaxLength": 30,
+  },
+}

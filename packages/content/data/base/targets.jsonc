@@ -1,0 +1,17 @@
+// Target audiences. `themeAffinity` is a quality multiplier per theme; a missing theme counts as 1.
+//
+// TODO(balance): PROVISIONAL. Shojo and the other audiences are unlocked later (AGENTS.md section 13).
+{
+  "targets": [
+    {
+      "id": "shonen",
+      "name": { "fr": "Shōnen", "en": "Shonen" },
+      "themeAffinity": { "adventure": 1.1, "sport": 1.05, "comedy": 1.0, "combat": 1.1 },
+    },
+    {
+      "id": "seinen",
+      "name": { "fr": "Seinen", "en": "Seinen" },
+      "themeAffinity": { "adventure": 0.95, "sport": 1.0, "comedy": 1.05, "combat": 0.9 },
+    },
+  ],
+}
