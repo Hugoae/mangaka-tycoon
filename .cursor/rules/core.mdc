@@ -1,0 +1,22 @@
+---
+description: Rules for the pure simulation core (determinism, state, commands, events, saves). AGENTS.md section 5.3, ADR 0003, 0004, 0005, 0012.
+globs: packages/core/**
+alwaysApply: false
+---
+
+# Simulation core (`@mangaka/core`)
+
+The core knows nothing about UI, rendering, disk or the clock.
+
+- **Pure**: `advanceWeek(state, content) -> { state, events }`. Same input and same seed give the same output.
+- Forbidden here (also enforced by lint and tsconfig): `Date`, `Math.random`, `window`, `document`, `process`, `fetch`, timers, classes, any `node:*`, react, pixi.js, electron.
+- Allowed libraries: `immer` (ADR 0004) and `zod` (save validation) only.
+- **Randomness**: sfc32, one stream per `(week, systemId)` derived from the seed (ADR 0005). Never share a stream between systems. Saves store the seed.
+- **State** is plain JSON: no class, `Map`, `Set`, function or native `Date`. Money and fans are integers.
+- **Immutability**: update state with immer `produce`; never mutate an input.
+- **Commands -> systems -> events**: typed discriminated commands, validated by the core. Events carry a translation key plus params, never formatted text.
+- **Explainability**: every rating, sales or fans computation returns a `breakdown` so the UI can explain it.
+- **Calendar**: 48 weeks per year, 4 per month, starts January 1980 (ADR 0012). Calendar maths lives in `calendar/`.
+- **Balance**: no numeric constant of gameplay in code. Read it from `Balance` (from `balance.jsonc`); a provisional value is marked `TODO(balance)`. Do not invent formulas: ask Hugo.
+- **Saves**: versioned envelope, zod validation, pure migrations (`migrateV1toV2`) with a reference save per version.
+- Every system ships with tests. Coverage threshold on this package is 90%.

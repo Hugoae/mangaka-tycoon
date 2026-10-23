@@ -97,6 +97,12 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
   - pnpm comes from Corepack (`packageManager` field), no third-party action. No dependency cache yet (install takes seconds).
   - No `build` step yet: there is nothing to build until the Electron skeleton exists. It is added then, and the CI must be extended.
 
+- Commit 9: CI runner images pinned (`ubuntu-24.04`, `windows-2025`) instead of `*-latest`, which moves to Ubuntu 26.
+- Commit 10: Cursor rules and ADR 0014.
+  - `.cursor/rules/`: `architecture`, `typescript`, `core`, `content-and-mods`, `react`, `pixi`, `electron`, `tests`, `git-commits`, `game-design`.
+    Each rule is short (under 35 lines), scoped by `globs` (`git-commits` is requested by the agent on demand), and points to `AGENTS.md` and the ADRs, which stay the source of truth.
+  - ADR 0014 records the decision to drive PixiJS imperatively without `@pixi/react` (validated in Phase A, but not yet written down).
+
 ## Open technical points
 
 - `boundaries` rules for the layers inside `game` (`ui`, `store`, `scene`, `main`, `preload`) are added with the Electron skeleton, once those folders exist.
@@ -108,5 +114,5 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
 
 ## Next step
 
-- Commit 9: Cursor rules (`.cursor/rules/*.mdc`) derived from `AGENTS.md`.
-- Then, in order of section 11.2: `docs/ARCHITECTURE.md`, Electron skeleton (with `advanceWeek` and its determinism test), smoke tests.
+- Commit 11: `docs/ARCHITECTURE.md` (overview and mermaid diagrams).
+- Then, in order of section 11.2: Electron skeleton (with `advanceWeek` and its determinism test), smoke tests.

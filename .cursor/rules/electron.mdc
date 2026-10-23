@@ -1,0 +1,18 @@
+---
+description: Electron main process, preload, IPC and build rules (security baseline, app:// protocol, atomic saves). AGENTS.md section 7, ADR 0008, 0009, 0011.
+globs: packages/game/src/main/**, packages/game/src/preload/**, packages/game/src/shared/**, electron.vite.config.*, electron-builder.*
+alwaysApply: false
+---
+
+# Electron
+
+- Security baseline: `contextIsolation: true`, `nodeIntegration: false`, `sandbox: true` when possible, strict CSP, navigation and `window.open` denied by default.
+- The renderer reaches the system **only** through the preload (`contextBridge`) and the typed `PlatformApi` (ADR 0008).
+- IPC payloads are validated with zod on both sides. The contract lives in `game/src/shared`. Treat everything from the renderer as untrusted.
+- Production loads the app through a custom **`app://`** protocol (`protocol.handle`), never `file://` (ADR 0009).
+- Saves and settings live in `app.getPath("userData")`. Write atomically: temporary file, then rename, and keep a backup copy.
+- Timestamps such as `savedAt` are set here, never by the core.
+- Electron is pinned to 44.x for now (ADR 0009). Check the current Electron docs before using an API.
+- `electron-vite` stays a **thin** layer (ADR 0011): no logic in its config, no imports from `electron-vite`, no `?asset`-style imports. Keep the exit plan valid.
+- Force `force-device-scale-factor=1` and compute the integer scale ourselves (ADR 0010).
+- Steam integration is out of scope, but do nothing that prevents it.

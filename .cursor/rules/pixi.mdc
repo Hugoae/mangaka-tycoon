@@ -1,0 +1,18 @@
+---
+description: PixiJS scene rules (no game logic, pixel-perfect rendering, cleanup). AGENTS.md sections 6 and 9.4, ADR 0010.
+globs: packages/game/src/renderer/scene/**
+alwaysApply: false
+---
+
+# PixiJS scene
+
+- **Check the current PixiJS documentation before using any API.** Pixi changed a lot between major versions; do not rely on memory.
+- The scene **displays** state. It contains no game rule. It subscribes to the store with `store.subscribe` and updates itself.
+- Imperative scene module mounted by a React component. Do not use `@pixi/react` (ADR 0014).
+- Internal resolution **640x360**. Scale by **integers only** (x2, x3, x4...), letterbox the rest (ADR 0010).
+- Pixel-perfect: nearest-neighbour filtering, `image-rendering: pixelated`, rounded positions (`roundPixels`), antialiasing off.
+- Simulation and rendering are decoupled: weeks are discrete ticks, rendering runs at screen rate (target 60 fps) with interpolated animation. A slow frame must never change game logic.
+- Release resources on unmount: textures, listeners, ticker callbacks, the application itself.
+- Avoid allocations inside the render loop (reuse objects, arrays, points).
+- Placeholder assets first (rectangles, simple sprites). Name sprites consistently and group them by domain, with a sprite atlas pipeline planned for later.
+- Any change touching scaling or the Electron version must be checked at 100%, 125% and 150% Windows display scaling.

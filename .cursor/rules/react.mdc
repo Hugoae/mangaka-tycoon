@@ -1,0 +1,18 @@
+---
+description: React UI conventions (presentational vs connected, selectors, i18n, accessibility, pixel UI). AGENTS.md section 9.3, ADR 0006, 0007.
+globs: packages/game/src/renderer/**/*.tsx, packages/game/src/renderer/ui/**, packages/game/src/renderer/store/**, packages/game/src/renderer/i18n/**
+alwaysApply: false
+---
+
+# React UI
+
+- Functional components and hooks only. Separate **presentational** components (props in, JSX out) from **connected** ones (read the store).
+- The UI **never mutates game state**. It reads through selectors of the core and sends commands with `dispatch(command)` from the Zustand store (ADR 0006).
+- No business logic in components. If you compute a rating, a total or a rule, it belongs in a core selector or system.
+- Selectors that build a new array or object must be memoised or wrapped with `useShallow`.
+- Do not use `useEffect` to derive state: compute while rendering, or in a selector.
+- **No hard-coded visible text.** Every string goes through i18n (`t("key")`), with FR and EN keys added together (ADR 0007). Format numbers, money and dates with `Intl`.
+- Accessibility: full keyboard navigation for menus, visible focus, sensible roles and labels.
+- Style: sizes in **game pixels** multiplied by the `--scale` CSS variable, pixel font, design tokens (colours, spacing, pixel borders). The UI must not look like a generic web app.
+- Charts use the game's visual style (canvas at internal resolution, ADR planned at M4).
+- Never import `electron`. Reach the host only through `PlatformApi` (ADR 0008).

@@ -1,0 +1,19 @@
+---
+description: Game design guardrails. Formulas and balance belong to Hugo; propose options, never decide silently. AGENTS.md sections 0, 2, 3, 10.5, 13, 14.
+globs: docs/GAME_DESIGN.md, packages/content/data/**, packages/core/src/systems/**
+alwaysApply: false
+---
+
+# Game design
+
+**Formulas, balance numbers and gameplay choices belong to Hugo.** You propose, he decides.
+
+- If a formula, number or rule is missing: **ask**, or give 2 or 3 options with their effects. Do not pick one silently.
+- A provisional value goes in `balance.jsonc` with a `TODO(balance)` comment, and is listed in your end-of-task summary.
+- Document every formula and table in `docs/GAME_DESIGN.md` with a worked example computed by hand.
+- Core loop (validated): choose theme, audience and style; spread effort over 5 sliders (`story`, `art`, `characters`, `worldbuilding`, `pacing`); multipliers; then weekly magazine rating, fans, monthly volume sales, money, reinvestment. A feature that does not plug into this loop is probably out of MVP scope.
+- Explainability is a pillar: the player must understand why a chapter did well or badly. Every computation returns a breakdown.
+- MVP scope is solo mangaka, one office, no assistants, one era (1980s), one publisher. Do not implement v1, v2 or later features.
+- Names are parodies. Never use real brands or titles in base content.
+- **Open questions, not to be guessed** (see `docs/PROGRESS.md`): how a series starts, parallel series, chapters per volume and what "monthly sales" means, what happens after December 1989, whether there is a lose condition.
+- Do not touch the time scale: 1 tick is 1 week, 4 weeks per month, 48 per year (ADR 0012).

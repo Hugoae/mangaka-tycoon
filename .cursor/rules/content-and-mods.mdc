@@ -1,0 +1,18 @@
+---
+description: Game data, zod schemas, loader and mod rules (JSONC, ids, parodies, locales). AGENTS.md sections 8 and 13, ADR 0002.
+globs: packages/content/**, mods/**
+alwaysApply: false
+---
+
+# Content and mods
+
+- Content is **data**, never code: `.jsonc` files validated by zod (ADR 0002). Comments are allowed and discarded at load.
+- Everything references other content by `id`, never by copy.
+- **No display text in content.** Names and descriptions are translation keys derived from the id (`theme.adventure.name`); text lives in `locales/fr.json` and `locales/en.json`, which must always have the same keys.
+- **Parodies only.** Never use real brands or titles in base content (for example "Dragon Orb", not the real one).
+- Base content and mods go through the **same** path: `RawPack { manifest, files }` into one `loadPacks(packs)` that validates, merges by `id`, then cross-checks references (every referenced id exists).
+- Errors must say file, field and problem. An invalid mod is refused with a readable message and never crashes the game.
+- `content` does not read files or touch the DOM or Node: the host reads files and passes them in.
+- A mod overrides by `id` with the same schema. No code execution from mods in the MVP.
+- Saves record active mods (`id` and version) and fail with a clear message when an id they use is missing.
+- Balance constants live in `balance.jsonc`, documented in `docs/GAME_DESIGN.md`, provisional values tagged `TODO(balance)`.

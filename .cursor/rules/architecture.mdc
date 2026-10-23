@@ -1,0 +1,31 @@
+---
+description: Monorepo architecture, package dependency direction and ADR discipline. Source of truth is AGENTS.md sections 4, 5 and 10.
+globs: **/package.json, **/tsconfig*.json, pnpm-workspace.yaml, eslint.config.js, eslint/**, docs/adr/**, docs/ARCHITECTURE.md
+alwaysApply: false
+---
+
+# Architecture
+
+Source of truth: `AGENTS.md` sections 4, 5, 10 and `docs/adr/`.
+
+## Dependency direction (enforced by pnpm, `exports`, tsconfig and ESLint)
+
+```
+core    -> nothing internal (pure libs only: immer, zod)
+content -> core (TYPES ONLY) + zod + jsonc-parser
+game    -> core, content
+tools   -> core, content
+```
+
+- `core` defines the types it consumes (`ContentDb`, `Balance`); `content` imports them (ADR 0003).
+- Import packages only by name (`@mangaka/core`). Deep imports are impossible (`exports: { ".": ... }`).
+- `game` reaches the host only through `PlatformApi` (ADR 0008). UI sends commands, never mutates state.
+
+## Working rules
+
+- Never bypass a boundary to go faster. If a rule blocks you, say so and propose an alternative.
+- Every important decision gets an ADR in `docs/adr/` (context, decision, alternatives, consequences). ADRs are immutable: supersede, do not edit.
+- Plan before coding any non-trivial task; wait for Hugo when it involves architecture or game design.
+- Do not implement v1/v2 features (AGENTS.md 3). Design so they fit later, without speculative abstractions.
+- Do not add a dependency without checking the registry (existence, last release, licence, size) and the 3-day release-age policy (ADR 0013).
+- At the end of a task: update `docs/PROGRESS.md`, summarise done / remaining / points for Hugo to validate.

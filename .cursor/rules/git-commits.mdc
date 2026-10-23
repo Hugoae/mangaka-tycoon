@@ -1,0 +1,21 @@
+---
+description: Git workflow, Conventional Commits, hooks and end-of-task checklist. Use when committing, pushing or finishing a task.
+alwaysApply: false
+---
+
+# Git and commits
+
+- **Conventional Commits** in English: `type(scope): subject`. Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`.
+- Scope is optional, lowercase, usually a package: `core`, `content`, `game`, `tools`. The `commit-msg` hook rejects a message that does not match the format.
+- One task is one coherent, testable commit. No giant commits.
+- The `pre-commit` hook runs lint-staged, `pnpm typecheck` and `pnpm test`. **Never** bypass it with `--no-verify`. Fix the cause.
+- Before pushing, run: `pnpm format:check && pnpm lint && pnpm typecheck && pnpm test:coverage`. CI runs the same on Ubuntu and Windows.
+- Actions in workflows are pinned by commit SHA with the tag as a comment. Do not use floating tags.
+- Never commit secrets, `.env` files, or build outputs.
+- Do not force-push `main`. Push only when Hugo asked for it or the task says so.
+
+## End of every task
+
+1. Update `docs/PROGRESS.md`: what changed, decisions, current state, next step.
+2. Add or update an ADR if an architectural decision was made.
+3. Summarise for Hugo: done, remaining, and points he must validate. Flag anything uncertain or in conflict with `AGENTS.md`.

@@ -1,0 +1,18 @@
+---
+description: Testing rules (Vitest, determinism, property tests, honest expected values, lint rule tests). AGENTS.md sections 5.3.8 and 9.5.
+globs: **/*.test.ts, **/*.test.tsx, vitest.config.*
+alwaysApply: false
+---
+
+# Tests
+
+- Vitest, tests next to the code (`foo.test.ts`). No simulation logic without tests.
+- **Expected values are computed by hand** and explained in a comment or in `docs/GAME_DESIGN.md`. Never derive the expectation by calling the code under test, and never use snapshots in `core`.
+- Never weaken or delete a test to make it pass. If a test is wrong, explain why before changing it.
+- **Determinism**: same seed gives the same result. A run with save then load in the middle must equal an uninterrupted run.
+- **Property tests** (`fast-check`) for invariants: money and fans never `NaN`, fans never negative, save then load gives an identical state, calendar round-trips.
+- Cover errors and edges: empty state, week 0, month and year boundaries, invalid commands, corrupted saves.
+- Coverage threshold on `core` is 90%. Check with `pnpm test:coverage`.
+- Architecture rules are tested too: `tools/src/lint-rules.test.ts` lists code that must fail the lint. When you add or change a rule in `eslint.config.js` or `eslint/boundaries.js`, add its "must fail" case.
+- When sabotaging a rule to prove a test fails, run the edit and the test **one after the other**, then restore the file and check `git diff` is empty.
+- Tests must be fast and independent: no real clock, no disk, no network.

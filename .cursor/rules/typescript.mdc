@@ -1,0 +1,33 @@
+---
+description: TypeScript conventions for every source file (strict typing, naming, file size). AGENTS.md section 9.1 and 9.2.
+globs: **/*.ts, **/*.tsx
+alwaysApply: false
+---
+
+# TypeScript
+
+TypeScript 6.0 in strict mode (ADR 0001). Most rules below are enforced by ESLint: run `pnpm lint`, never silence it silently.
+
+- Forbidden: `any`, `as` assertions (except `as const`), `!` non-null, `@ts-ignore`, default exports, `enum`, `namespace`.
+- A justified exception needs `// eslint-disable-next-line <rule> -- <reason>` with a real reason. Unused disables fail the lint.
+- Prefer `unknown` plus zod validation at boundaries (files, IPC, saves).
+- Discriminated unions (`kind` / `type`) for commands and events; exhaustive `switch` with `assertNever`.
+- Use `import type` for type-only imports.
+- Named exports only. Small functions, one responsibility, explicit names. Files under about 300 lines.
+- No magic numbers: named constants or `balance.jsonc`.
+- Comments explain why, not what. JSDoc on the public API of each package.
+- Files in `kebab-case`, types and components in `PascalCase`, functions and variables in `camelCase`, true global constants in `SCREAMING_SNAKE_CASE`.
+- Tests next to the code: `foo.ts` and `foo.test.ts`.
+- Code, identifiers, comments and commits are in English. Talk to Hugo in French.
+
+```ts
+// Good: exhaustive switch
+function describe(command: Command): string {
+  switch (command.kind) {
+    case "AdvanceWeek":
+      return "advance";
+    default:
+      return assertNever(command);
+  }
+}
+```
