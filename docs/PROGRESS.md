@@ -91,6 +91,12 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
     Verified by sabotage: setting `checkAllOrigins: false` makes 4 boundary tests fail. This covers the "boundary rules really break" test of section 11.2, point 9.
   - `pre-commit` now runs lint-staged, `pnpm typecheck` and `pnpm test`.
 
+- Commit 8: GitHub Actions CI (`.github/workflows/ci.yml`).
+  - Runs on push to `main` and on pull requests, on Ubuntu and Windows (`fail-fast: false`). Steps: install (`--frozen-lockfile`), `format:check`, `lint`, `typecheck`, `test:coverage`.
+  - Actions pinned by commit SHA (`actions/checkout` v7.0.1, `actions/setup-node` v7.1.0), `permissions: contents: read`, concurrency cancels superseded runs, 15 minute timeout.
+  - pnpm comes from Corepack (`packageManager` field), no third-party action. No dependency cache yet (install takes seconds).
+  - No `build` step yet: there is nothing to build until the Electron skeleton exists. It is added then, and the CI must be extended.
+
 ## Open technical points
 
 - `boundaries` rules for the layers inside `game` (`ui`, `store`, `scene`, `main`, `preload`) are added with the Electron skeleton, once those folders exist.
@@ -102,5 +108,5 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
 
 ## Next step
 
-- Commit 8: GitHub Actions CI (install, lint, typecheck, test with coverage, build).
-- Then, in order of section 11.2: Cursor rules, `docs/ARCHITECTURE.md`, Electron skeleton (with `advanceWeek` and its determinism test), smoke tests.
+- Commit 9: Cursor rules (`.cursor/rules/*.mdc`) derived from `AGENTS.md`.
+- Then, in order of section 11.2: `docs/ARCHITECTURE.md`, Electron skeleton (with `advanceWeek` and its determinism test), smoke tests.
