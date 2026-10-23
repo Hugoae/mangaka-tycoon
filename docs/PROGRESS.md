@@ -103,6 +103,9 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
     Each rule is short (under 35 lines), scoped by `globs` (`git-commits` is requested by the agent on demand), and points to `AGENTS.md` and the ADRs, which stay the source of truth.
   - ADR 0014 records the decision to drive PixiJS imperatively without `@pixi/react` (validated in Phase A, but not yet written down).
 
+- Commit 11: `.cursor/rules/language.mdc`, always applied. Rules stay in English but state that replies to Hugo are always in French
+  (code, identifiers, comments, commits and technical docs stay in English).
+
 ## Open technical points
 
 - `boundaries` rules for the layers inside `game` (`ui`, `store`, `scene`, `main`, `preload`) are added with the Electron skeleton, once those folders exist.

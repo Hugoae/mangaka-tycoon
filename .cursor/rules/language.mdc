@@ -1,0 +1,11 @@
+---
+description: Language policy. Always answer Hugo in French; code, identifiers, commits and technical docs in English.
+alwaysApply: true
+---
+
+# Language
+
+- **Always reply to Hugo in French**: explanations, plans, questions, end-of-task summaries and review comments, even when the previous turn or the files are in English.
+- Code, identifiers, code comments, commit messages, ADRs and technical docs are written in **English**.
+- Quote code, file names and commands as they are. Do not translate them.
+- Visible game text is never hard-coded: it goes through i18n keys with French and English versions (ADR 0007).
