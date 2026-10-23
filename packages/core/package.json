@@ -1,0 +1,12 @@
+{
+  "name": "@mangaka/core",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Pure simulation core: no DOM, no Node, no React, no I/O.",
+  "license": "UNLICENSED",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  }
+}

@@ -1,0 +1,16 @@
+packages:
+  - 'packages/*'
+  - 'tools'
+
+# Supply-chain guard: refuse any version published less than 3 days ago
+# (value in minutes). Strict mode is on by default once the value is explicit,
+# so a too-fresh version fails the install instead of silently slipping in.
+minimumReleaseAge: 4320
+
+# Fail the install when an unreviewed dependency ships a build script.
+# Every allowed build is listed here explicitly, with its reason.
+strictDepBuilds: true
+allowBuilds: {}
+
+# Make `engines` in package.json a hard requirement, not a warning.
+engineStrict: true

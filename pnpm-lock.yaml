@@ -1,0 +1,35 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .: {}
+
+  packages/content:
+    dependencies:
+      '@mangaka/core':
+        specifier: workspace:*
+        version: link:../core
+
+  packages/core: {}
+
+  packages/game:
+    dependencies:
+      '@mangaka/content':
+        specifier: workspace:*
+        version: link:../content
+      '@mangaka/core':
+        specifier: workspace:*
+        version: link:../core
+
+  tools:
+    dependencies:
+      '@mangaka/content':
+        specifier: workspace:*
+        version: link:../packages/content
+      '@mangaka/core':
+        specifier: workspace:*
+        version: link:../packages/core

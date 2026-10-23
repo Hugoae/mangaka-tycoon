@@ -1,0 +1,12 @@
+{
+  "name": "@mangaka/game",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Electron application: main process, preload, and React + PixiJS renderer.",
+  "license": "UNLICENSED",
+  "type": "module",
+  "dependencies": {
+    "@mangaka/content": "workspace:*",
+    "@mangaka/core": "workspace:*"
+  }
+}

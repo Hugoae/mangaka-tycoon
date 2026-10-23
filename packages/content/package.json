@@ -1,0 +1,15 @@
+{
+  "name": "@mangaka/content",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Game data, schemas, loader and mod merging. Depends on core for types only.",
+  "license": "UNLICENSED",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "dependencies": {
+    "@mangaka/core": "workspace:*"
+  }
+}

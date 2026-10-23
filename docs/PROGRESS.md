@@ -39,8 +39,17 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
 ## Done
 
 - Phase A review.
-- Commit 1: repository initialisation.
+- Commit 1: repository initialisation (pushed to `origin/main`).
+- Commit 2: pnpm workspace.
+  - pnpm pinned to `11.28.6` through `packageManager` (Corepack downloads it automatically).
+    pnpm 12.15.0 exists; staying on the 11.x line the machine already uses. Upgrade is a separate, deliberate step.
+  - `minimumReleaseAge: 4320` (3 days, strict), `strictDepBuilds: true`, `allowBuilds: {}` (each allowed build will be listed with its reason), `engineStrict: true`.
+  - Packages: `@mangaka/core`, `@mangaka/content`, `@mangaka/game`, `@mangaka/tools` (empty `index.ts`).
+  - The dependency graph of section 5.2 is encoded in the `package.json` files, so pnpm's strict layout enforces it:
+    `core -> nothing`, `content -> core`, `game -> core, content`, `tools -> core, content`.
+  - `core` and `content` expose only `"."` in `exports`: deep imports fail with `ERR_PACKAGE_PATH_NOT_EXPORTED`.
+    Workspace packages export their TypeScript source directly (no build step between packages).
 
 ## Next step
 
-- Commit 2: pnpm workspace (root `package.json`, `pnpm-workspace.yaml`, four empty packages).
+- Commit 3: TypeScript configuration (`tsconfig.base.json`, project references, `core` without DOM/Node types, TypeScript pinned to `~6.0.3`).

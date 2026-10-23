@@ -1,0 +1,13 @@
+{
+  "name": "mangaka-tycoon",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Mangaka Tycoon: a management game about building a manga career.",
+  "license": "UNLICENSED",
+  "type": "module",
+  "packageManager": "pnpm@11.28.6",
+  "engines": {
+    "node": ">=24.0.0 <25",
+    "pnpm": ">=11.28.6 <12"
+  }
+}
