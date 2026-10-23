@@ -106,6 +106,12 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
 - Commit 11: `.cursor/rules/language.mdc`, always applied. Rules stay in English but state that replies to Hugo are always in French
   (code, identifiers, comments, commits and technical docs stay in English).
 
+- Commit 12: `docs/ARCHITECTURE.md`. Five mermaid diagrams: packages and dependency direction, command to event flow, weekly tick,
+  Electron layers (main, preload, renderer), content loading and saves. Plus a table of how each rule is enforced.
+  - It summarises the ADRs and introduces no decision. Items not built yet are marked `planned`.
+  - The order of systems inside a tick is explicitly left open (M3, Hugo decides). The diagram is a flow, not a specification.
+  - Diagrams checked with the real mermaid 11 engine (parse and render), not only by eye.
+
 ## Open technical points
 
 - `boundaries` rules for the layers inside `game` (`ui`, `store`, `scene`, `main`, `preload`) are added with the Electron skeleton, once those folders exist.
@@ -117,5 +123,6 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
 
 ## Next step
 
-- Commit 11: `docs/ARCHITECTURE.md` (overview and mermaid diagrams).
-- Then, in order of section 11.2: Electron skeleton (with `advanceWeek` and its determinism test), smoke tests.
+- Electron skeleton (section 11.2, point 8), split into small commits: `core` minimal (`GameState`, calendar, `advanceWeek`, determinism test),
+  then the `game` package (electron-vite, React, Pixi canvas 640x360, `app://`, preload and `PlatformApi`), then `build` in CI.
+- Then pixel-perfect verification at 100%, 125% and 150% Windows scaling (ADR 0010), and the smoke tests that remain.
