@@ -1,0 +1,10 @@
+{
+  // Solution file: builds every package in dependency order with `tsc -b`.
+  "files": [],
+  "references": [
+    { "path": "packages/core" },
+    { "path": "packages/content" },
+    { "path": "packages/game" },
+    { "path": "tools" }
+  ]
+}

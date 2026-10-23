@@ -50,6 +50,22 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
   - `core` and `content` expose only `"."` in `exports`: deep imports fail with `ERR_PACKAGE_PATH_NOT_EXPORTED`.
     Workspace packages export their TypeScript source directly (no build step between packages).
 
+- Commit 3: TypeScript configuration.
+  - `typescript@~6.0.3` at the root; `@types/node@~24.19.2` in `tools` only.
+  - `tsconfig.base.json`: all options of AGENTS.md 9.1, plus `noImplicitReturns`, `noUnused*`, `noPropertyAccessFromIndexSignature`,
+    `verbatimModuleSyntax`, `isolatedModules`, `erasableSyntaxOnly` (no enums or namespaces, compatible with Node type stripping), `types: []`.
+  - Project references (`tsc -b`, declarations only, output in git-ignored `dist/`). `pnpm typecheck` passes with no output.
+  - `core` and `content`: `lib: ["ES2023"]`, `types: []`. `window`, `document`, `process`, `setTimeout` do not exist there at compile time.
+  - Verified with a throw-away file in `core`: 8 expected errors (DOM, Node, unchecked index, enum, exact optional, missing return). The file was deleted.
+    This manual probe becomes an automated test with the lint boundary tests.
+
+## Open technical points
+
+- `tools` will run TypeScript on Node or through a runner (`tsx` / Vite). Relative imports are extensionless for now (bundler resolution);
+  decide with the simulation bot (M3) whether to run through a bundler-aware runner or require `.ts` extensions.
+- `game/tsconfig.json` is a placeholder: split into main/preload (Node) and renderer (DOM) projects with the Electron skeleton.
+
 ## Next step
 
-- Commit 3: TypeScript configuration (`tsconfig.base.json`, project references, `core` without DOM/Node types, TypeScript pinned to `~6.0.3`).
+- Commit 4: first ADRs (`docs/adr/0001` to `0009`), including the electron-vite exit strategy.
+- Then, in order of section 11.2: ESLint + Prettier + Husky, Vitest, CI, Cursor rules, `docs/ARCHITECTURE.md`, Electron skeleton, smoke tests.

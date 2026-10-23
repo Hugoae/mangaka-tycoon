@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    // Pure ECMAScript only: no DOM, no Node. `window`, `document`, `process`,
+    // `setTimeout` and friends do not exist for this package at compile time.
+    "lib": ["ES2023"],
+    "types": [],
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "include": ["src"]
+}
