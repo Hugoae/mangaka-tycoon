@@ -87,8 +87,8 @@ Carrières éditeur et animateur, rachat de parts d'une maison d'édition, expor
 | Scène pixel | PixiJS |
 | Desktop | Electron (Chromium embarqué : comportement identique sur toutes les plateformes) |
 | Vue | **2D fixe** pour le prototype (pas d'isométrique) |
-| Temps | **Tour par tour hebdomadaire** : 1 tick = 1 semaine, le calendrier démarre en janvier 1980 |
-| Contenu | **Data-driven** (JSON validé par schémas), jamais de contenu en dur dans le code |
+| Temps | **Tour par tour hebdomadaire** : 1 tick = 1 semaine, le calendrier démarre en janvier 1980. Calendrier stylisé : **4 semaines par mois, 48 semaines par an** (ADR 0012) |
+| Contenu | **Data-driven** (**JSONC** validé par schémas zod, ADR 0002), jamais de contenu en dur dans le code |
 | Noms réels | **Parodies** dans le jeu (ex : "Dragon Orb" au lieu de Dragon Ball). Un **mod** pourra restaurer les vrais noms |
 | i18n | FR + EN **dès le premier jour** |
 | Mods | Packs de contenu qui surchargent des `id` (noms, assets, données) |
@@ -123,7 +123,7 @@ mangaka-sim/
 │  │     ├─ save/            # sérialisation + migrations versionnées
 │  │     └─ index.ts         # API publique minimale
 │  ├─ content/               # données du jeu + schémas zod + loader
-│  │  ├─ data/               # themes/, genres/, eras/, works/, talents/, events/, balance.json
+│  │  ├─ data/               # themes/, genres/, eras/, works/, talents/, events/, balance.jsonc
 │  │  ├─ locales/            # fr.json, en.json
 │  │  └─ src/                # schémas, loader, merge de mods
 │  └─ game/                  # application Electron
@@ -141,27 +141,29 @@ mangaka-sim/
 ### 5.2 Règles de dépendance (À FAIRE RESPECTER PAR LINT)
 
 ```
-core     → (ne dépend de RIEN d'interne ; seulement des types de content si nécessaire, via injection)
-content  → zod uniquement
+core     → rien d'interne (bibliothèques pures autorisées : immer, zod pour valider les sauvegardes)
+content  → core (types uniquement) + zod
 game     → core, content
 tools    → core, content
 ```
+
+> Précisé par l'ADR 0003 : `core` **définit** les types qu'il consomme (`ContentDb`, `Balance`…) ; `content` les importe (`import type`) et son loader produit un `ContentDb`. Le domaine ne dépend jamais du format des fichiers.
 
 - `core` n'importe **jamais** `react`, `pixi.js`, `electron`, `node:*`, ni rien qui touche au DOM.
 - `core` ne lit **jamais** les fichiers : il reçoit le contenu **en paramètre** (injection de dépendance).
 - `game/scene` ne contient **aucune logique de jeu** ; elle affiche l'état.
 - `game/ui` ne mute **jamais** l'état directement : elle émet des **commandes**.
-- Faire respecter ces règles avec `eslint-plugin-boundaries` ou `dependency-cruiser` (au choix, justifier).
+- Ces règles sont imposées en **couches** (ADR 0003) : layout strict de pnpm, `exports` limité à `"."` (pas d'import profond), `tsconfig` de `core`/`content` sans DOM ni Node (`lib: ["ES2023"]`, `types: []`), ESLint (`no-restricted-*` + `eslint-plugin-boundaries`), et un test qui prouve que le lint échoue quand une règle est violée.
 
 ### 5.3 Principes du cœur de simulation
 
 1. **Pureté** : `advanceWeek(state, content) → { state, events }`. Même entrée + même seed = même sortie. Aucune lecture de `Date.now()`, `Math.random()`, `window`, réseau ou disque dans `core` (interdit par règle ESLint).
-2. **RNG seedé et restaurable** : PRNG déterministe (ex : mulberry32 ou sfc32), état du PRNG sérialisé dans la sauvegarde (le chargement reprend exactement la même séquence).
+2. **RNG seedé et restaurable** : PRNG déterministe **sfc32**, avec **un flux par couple (semaine, système)** dérivé de la seed (ADR 0005). L'état d'un flux étant une fonction pure de `(seed, semaine, système)`, la sauvegarde ne stocke que la seed et le chargement reprend exactement la même séquence.
 3. **État sérialisable** : `GameState` = données JSON simples uniquement (pas de classes, pas de Map/Set, pas de fonctions, pas de dates natives).
-4. **Immutabilité à la frontière** : les systèmes renvoient un nouvel état (utiliser `structuredClone` ou une lib type `immer` si justifié ; décider en Tâche 1).
+4. **Immutabilité à la frontière** : les systèmes renvoient un nouvel état (**immer**, auto-freeze en dev et en test, ADR 0004).
 5. **Commandes → Systèmes → Événements** : l'UI envoie des commandes typées (`SetChapterPlan`, `PublishChapter`, `AdvanceWeek`…). Le cœur valide et applique. Le cœur émet des **GameEvents** (journal) que l'UI affiche (ex : "Chapitre 12 : note 7.8, +340 fans").
 6. **Explicabilité** : chaque calcul de note/ventes renvoie un **breakdown** (contributions détaillées) pour que l'UI puisse expliquer le résultat au joueur.
-7. **Constantes d'équilibrage hors du code** : toutes dans `content/data/balance.json`, validées par zod, commentées dans `docs/GAME_DESIGN.md`.
+7. **Constantes d'équilibrage hors du code** : toutes dans `content/data/balance.jsonc`, validées par zod, commentées dans `docs/GAME_DESIGN.md`.
 8. **Testabilité** : un bot headless doit pouvoir simuler 40 ans de carrière en quelques secondes pour détecter les économies cassées.
 9. **Sauvegardes versionnées** : champ `version` + fonctions de migration pures (`migrateV1toV2`) dès la première version.
 
@@ -173,7 +175,7 @@ type WeekIndex = number;                 // semaines écoulées depuis la semain
 interface GameState {
   version: number;
   seed: number;
-  rng: RngState;                         // état restaurable du PRNG
+  rng: RngState;                         // seed uniquement : les flux sont dérivés (semaine, système), voir ADR 0005
   week: WeekIndex;
   money: number;
   mangaka: Mangaka;
@@ -210,7 +212,7 @@ interface Series {
 
 ## 6. Rendu et pixel art
 
-- **Résolution interne basse** (proposition : 480×270, ratio 16:9 — à valider).
+- **Résolution interne basse : 640×360** (ratio 16:9, validée ; ADR 0010), **plein écran sans bordure par défaut**. Le facteur d'échelle de l'OS est neutralisé (`force-device-scale-factor=1`) ; rendu pixel perfect à vérifier à 100 %, 125 % et 150 % de mise à l'échelle Windows.
 - **Mise à l'échelle entière uniquement** (×2, ×3, ×4…) pour que les pixels restent nets ; letterboxing si besoin.
 - Filtrage **nearest** partout ; `image-rendering: pixelated` ; positions arrondies (`roundPixels`) ; antialiasing désactivé sur la scène.
 - **Découplage simulation / rendu** : la simulation avance par ticks discrets (semaines) ; le rendu tourne à la cadence de l'écran (cible 60 fps) avec animations interpolées. Un ralentissement visuel ne doit jamais affecter la logique.
@@ -232,8 +234,8 @@ interface Series {
 
 ## 8. Mods et contenu
 
-- Un mod = un dossier avec un manifeste (`mod.json`) + des fichiers de contenu JSON + éventuellement des locales/assets.
-- Un mod **surcharge par `id`** : même schéma, valeurs différentes. Exemple : le mod "vrais noms" remplace `works/dragon-orb.json` (nom affiché) par le vrai nom.
+- Un mod = un dossier avec un manifeste (`mod.json`) + des fichiers de contenu JSONC + éventuellement des locales/assets.
+- Un mod **surcharge par `id`** : même schéma, valeurs différentes. Exemple : le mod "vrais noms" remplace `works/dragon-orb.jsonc` (nom affiché) par le vrai nom.
 - Tout contenu (de base ou de mod) est **validé par zod au chargement** avec des messages d'erreur clairs (fichier, champ, problème). Un mod invalide ne doit pas faire crasher le jeu : il est refusé avec un message lisible.
 - Le contenu de base du jeu utilise le **même chemin de chargement** que les mods (pas de traitement spécial).
 - Aucune exécution de code arbitraire par les mods au MVP (données uniquement).
@@ -251,7 +253,7 @@ interface Series {
 - Exports **nommés** uniquement (pas d'export default) sauf contrainte d'outil.
 - Fonctions petites, une responsabilité, noms explicites. Pas de fichier > ~300 lignes sans raison.
 - Pas de classes dans `core` (fonctions pures + types). Pas d'héritage.
-- Pas de magic numbers : constantes nommées ou `balance.json`.
+- Pas de magic numbers : constantes nommées ou `balance.jsonc`.
 - Commentaires = le **pourquoi**, pas le quoi. Documentation JSDoc sur l'API publique de chaque package.
 
 ### 9.2 Organisation des fichiers
@@ -284,7 +286,7 @@ interface Series {
 - CI GitHub Actions : install, lint, typecheck, test, build à chaque push/PR.
 - Commits : **Conventional Commits** (`feat(core): …`, `fix(game): …`, `chore: …`).
 - Aucune dépendance ajoutée sans justification (taille, maintenance, licence). Vérifier que la lib est maintenue avant de l'adopter.
-- Versions : utiliser les **dernières versions stables** et **vérifier la documentation actuelle** avant d'utiliser une API (ne pas se fier à ta mémoire pour Electron, PixiJS, Vite, ESLint, zod…).
+- Versions : utiliser les **dernières versions stables** et **vérifier la documentation actuelle** avant d'utiliser une API (ne pas se fier à ta mémoire pour Electron, PixiJS, Vite, ESLint, zod…). Tout paquet doit aussi respecter `minimumReleaseAge` (3 jours, ADR 0013). Exceptions documentées : TypeScript `~6.0` (ADR 0001) et Electron 44.x (ADR 0009).
 
 ---
 
@@ -294,7 +296,7 @@ interface Series {
 2. **Petites étapes** : une tâche = un changement cohérent, testable, commitable. Pas de méga-PR.
 3. **Toujours livrer avec des tests** pour le cœur. Pas de logique de simulation sans test.
 4. **Ne jamais casser les règles de dépendance** pour "aller plus vite". Si une règle te gêne, dis-le et propose une alternative.
-5. **Décisions de design** : si une formule, un nombre ou une règle de gameplay manque, **pose la question** ou propose 2-3 options avec leurs effets, ne tranche pas seul. Place les valeurs provisoires dans `balance.json` avec un commentaire `TODO(balance)`.
+5. **Décisions de design** : si une formule, un nombre ou une règle de gameplay manque, **pose la question** ou propose 2-3 options avec leurs effets, ne tranche pas seul. Place les valeurs provisoires dans `balance.jsonc` avec un commentaire `TODO(balance)`.
 6. **Documenter les décisions** importantes en ADR (`docs/adr/NNNN-titre.md` : contexte, décision, alternatives, conséquences).
 7. **Signaler** tout ce qui est incertain, risqué, ou qui contredit ce document. Mieux vaut une objection tôt qu'une dette cachée.
 8. À la fin de chaque tâche : résumer ce qui a été fait, ce qui reste, les points à valider par Hugo.
@@ -344,7 +346,7 @@ Lis ce document en entier puis produis une **revue critique** :
 | Jalon | Contenu |
 |---|---|
 | **M1 — Squelette du cœur** | `GameState`, RNG restaurable, calendrier (1980), `advanceWeek`, commandes/événements, sauvegarde versionnée + migrations, tests complets |
-| **M2 — Pipeline de contenu** | Schémas zod, loader, `balance.json`, i18n FR/EN, système de surcharge par mods, validation avec messages clairs |
+| **M2 — Pipeline de contenu** | Schémas zod, loader, `balance.jsonc`, i18n FR/EN, système de surcharge par mods, validation avec messages clairs |
 | **M3 — Systèmes de jeu** | Création de chapitre (sliders), note magazine vs concurrents, fans, ventes mensuelles, finances, arrêt de série. Chaque système renvoie un **breakdown** explicable. Bot headless qui simule 40 ans |
 | **M4 — UI de gestion** | Écrans : nouvelle partie, hub, planification du chapitre (sliders), résultats de la semaine, finances, stats (graphes basiques). Design system pixel |
 | **M5 — Scène pixel** | Bureau 2D fixe, mangaka animé, feedback visuel de la production et des résultats |
@@ -371,9 +373,7 @@ Tous les noms sont des **parodies** : ne jamais utiliser de marques ou titres r�
 
 ## 14. Questions ouvertes (à poser à Hugo au bon moment)
 
-- Plateforme cible finale : Steam PC, navigateur (itch.io), les deux ?
-- Résolution interne définitive (480×270 ? 640×360 ?) selon le niveau de détail voulu.
-- Nombre de semaines par mois pour les ventes (calendrier réel ou mois fixes de 4 semaines) ?
+- Plateforme cible finale : Steam PC, navigateur (itch.io), les deux ? (`PlatformApi`, ADR 0008, garde les deux possibles.)
 - Direction artistique : palette, références visuelles, police pixel.
 - Source des assets (créés par Hugo, générés, achetés) et licences associées.
 - Granularité de la fatigue et de l'énergie : par semaine, par chapitre ?

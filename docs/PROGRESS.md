@@ -62,8 +62,10 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
 - Commit 4: 13 ADRs in `docs/adr/` (index in `docs/adr/README.md`), one per decision:
   TypeScript 6.0, JSONC, package dependency direction, immer, sfc32 derived streams, Zustand, i18next, PlatformApi,
   Electron 44 + `app://`, 640x360 scaling, electron-vite exit strategy, 48-week calendar, supply-chain policy.
-  - ADR 0003 refines `AGENTS.md` 5.2 (`content -> core` for types). `AGENTS.md` has not been edited: awaiting Hugo's approval to align it.
+  - ADR 0003 refines `AGENTS.md` 5.2 (`content -> core` for types).
   - ADR 0005 stores only the seed in saves (streams are derived from seed, week and system), which replaces "serialise the PRNG state" of 5.3.2 with an equivalent guarantee.
+- Commit 5: `AGENTS.md` aligned with the validated decisions (5.2 dependency graph, 5.3.2 RNG, 5.3.4 immer, JSONC and `balance.jsonc`,
+  48-week calendar, 640x360, version policy exceptions). Resolved questions removed from section 14.
   - ADR 0010 stays "pending verification" until the skeleton proves pixel-perfect rendering at 100%, 125% and 150%.
 
 ## Open technical points
@@ -74,5 +76,5 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
 
 ## Next step
 
-- Commit 5: ESLint (flat config, typescript-eslint strict, `core` restrictions, boundaries), Prettier, Husky + lint-staged.
+- Commit 6: ESLint (flat config, typescript-eslint strict, `core` restrictions, boundaries), Prettier, Husky + lint-staged.
 - Then, in order of section 11.2: Vitest + coverage threshold, CI, Cursor rules, `docs/ARCHITECTURE.md`, Electron skeleton, smoke tests.

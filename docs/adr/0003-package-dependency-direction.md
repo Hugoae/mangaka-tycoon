@@ -40,4 +40,4 @@ Enforcement is layered, so no single tool is a point of failure:
 
 - `content` has a type-only dependency on `core`; the loader's output type is owned by `core`.
 - Adding a new content kind means: type in `core`, schema in `content`, data files, locale keys.
-- The `AGENTS.md` wording of 5.2 is refined by this ADR; `AGENTS.md` should be updated to match.
+- The `AGENTS.md` wording of 5.2 is refined by this ADR, and `AGENTS.md` has been aligned.
