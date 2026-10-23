@@ -118,10 +118,31 @@ export const gameLayerConfigs = [
     ],
   ),
 
-  // Everything else in the renderer (i18n, platform, scene, bootstrap).
+  // Pixi scene: observes the store, never drives the core, knows nothing of React or the UI.
+  layer(
+    [`${SRC}/renderer/scene/**/*.{ts,tsx}`],
+    [],
+    [
+      ...forbid(HOST, "the renderer is sandboxed: go through PlatformApi."),
+      ...forbid(UI_LIBRARIES, "the scene is plain TypeScript, React mounts it (ADR 0014)."),
+      ...noToolingInSource,
+      noEngineCalls,
+    ],
+    [
+      ...subpaths(["electron", ...UI_LIBRARIES]),
+      "**/ui",
+      "**/ui/**",
+      "**/main",
+      "**/main/**",
+      "**/preload",
+      "**/preload/**",
+    ],
+  ),
+
+  // Everything else in the renderer (i18n, platform, stage, bootstrap).
   layer(
     [`${SRC}/renderer/**/*.{ts,tsx}`],
-    [`${SRC}/renderer/store/**`, `${SRC}/renderer/ui/**`],
+    [`${SRC}/renderer/store/**`, `${SRC}/renderer/ui/**`, `${SRC}/renderer/scene/**`],
     [
       ...forbid(HOST, "the renderer is sandboxed: go through PlatformApi."),
       ...noToolingInSource,

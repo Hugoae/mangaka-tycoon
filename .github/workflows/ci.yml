@@ -58,3 +58,7 @@ jobs:
 
       - name: Test with coverage
         run: pnpm test:coverage
+
+      # The game must also build (main, preload and renderer bundles). Packaging comes with M6.
+      - name: Build
+        run: pnpm build

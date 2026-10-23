@@ -13,6 +13,15 @@ export function GameStoreProvider(props: {
   return <GameStoreContext value={props.store}>{props.children}</GameStoreContext>;
 }
 
+/** The store itself, for code that subscribes imperatively (the Pixi scene host). */
+export function useGameStoreApi(): GameStore {
+  const store = useContext(GameStoreContext);
+  if (store === null) {
+    throw new Error("useGameStoreApi must be used inside a GameStoreProvider.");
+  }
+  return store;
+}
+
 /** Reads a slice of the game store. Must be used under {@link GameStoreProvider}. */
 export function useGameStore<Selected>(selector: (state: GameStoreState) => Selected): Selected {
   const store = useContext(GameStoreContext);

@@ -17,7 +17,10 @@ export function createMainWindow(devServerUrl: string | undefined): BrowserWindo
   const isDev = devServerUrl !== undefined;
 
   const window = new BrowserWindow({
-    ...(isDev ? { width: DEV_WINDOW_WIDTH, height: DEV_WINDOW_HEIGHT } : { fullscreen: true }),
+    ...(isDev
+      ? // Content size, not window size: the frame must not eat into the 1280x720 that fits x2.
+        { width: DEV_WINDOW_WIDTH, height: DEV_WINDOW_HEIGHT, useContentSize: true }
+      : { fullscreen: true }),
     backgroundColor: "#000000",
     webPreferences: {
       // Security baseline (ADR 0009), spelled out even where it is already the default.

@@ -15,16 +15,21 @@ const MAIN_FILE = "packages/game/src/main/probe.ts";
 const PRELOAD_FILE = "packages/game/src/preload/probe.ts";
 const STORE_FILE = "packages/game/src/renderer/store/probe.ts";
 const UI_FILE = "packages/game/src/renderer/ui/probe.ts";
+const SCENE_FILE = "packages/game/src/renderer/scene/probe.ts";
 const RENDERER_FILE = "packages/game/src/renderer/i18n/probe.ts";
 
 const RULE = "no-restricted-imports";
 
+/** A snippet that must be reported by `no-restricted-imports`. */
 const violation = (name: string, file: string, code: string): ProbeCase => ({
   name,
   file,
   code,
   ruleId: RULE,
 });
+
+/** A snippet that must NOT be reported by `no-restricted-imports`. */
+const allowed = violation;
 
 const MUST_FAIL: readonly ProbeCase[] = [
   // --- React UI: presentational only ---
@@ -57,6 +62,27 @@ const MUST_FAIL: readonly ProbeCase[] = [
     "ui imports the scene",
     UI_FILE,
     'import { createScene } from "../scene/scene";\nexport const scene = createScene;\n',
+  ),
+  // --- Pixi scene: observes, never drives ---
+  violation(
+    "the scene calls applyCommand",
+    SCENE_FILE,
+    'import { applyCommand } from "@mangaka/core";\nexport const run = applyCommand;\n',
+  ),
+  violation(
+    "the scene imports react",
+    SCENE_FILE,
+    'import { useState } from "react";\nexport const hook = useState;\n',
+  ),
+  violation(
+    "the scene imports zustand",
+    SCENE_FILE,
+    'import { createStore } from "zustand/vanilla";\nexport const make = createStore;\n',
+  ),
+  violation(
+    "the scene imports the UI",
+    SCENE_FILE,
+    'import { App } from "../ui/app";\nexport const root = App;\n',
   ),
   // --- renderer outside the store ---
   violation(
@@ -129,13 +155,6 @@ const MUST_FAIL: readonly ProbeCase[] = [
   ),
 ];
 
-const allowed = (name: string, file: string, code: string): ProbeCase => ({
-  name,
-  file,
-  code,
-  ruleId: RULE,
-});
-
 const MUST_PASS: readonly ProbeCase[] = [
   allowed(
     "the store drives the core",
@@ -153,7 +172,12 @@ const MUST_PASS: readonly ProbeCase[] = [
     'import { useTranslation } from "react-i18next";\nimport { useStore } from "zustand";\nimport { useState } from "react";\nexport const hooks = [useTranslation, useStore, useState];\n',
   ),
   allowed(
-    "the renderer outside ui and store may use pixi",
+    "the scene uses pixi and reads store types",
+    SCENE_FILE,
+    'import { Application } from "pixi.js";\nimport type { GameStore } from "../store/game-store";\nexport const make = (store: GameStore) => [Application, store];\n',
+  ),
+  allowed(
+    "the renderer outside ui, store and scene may use pixi",
     RENDERER_FILE,
     'import { Application } from "pixi.js";\nexport const app = Application;\n',
   ),
@@ -185,6 +209,7 @@ describe("game layer lint rules", () => {
       PRELOAD_FILE,
       STORE_FILE,
       UI_FILE,
+      SCENE_FILE,
       RENDERER_FILE,
     ]);
   });

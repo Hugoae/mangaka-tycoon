@@ -180,6 +180,16 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
     the event message shows; the stylesheet loads under the strict CSP (no console error). Screenshot: `docs/verification/step4-hub.png`.
   - Event text carries no number on purpose: `WeekAdvancedEvent.params.week` is the 0-based absolute index and i18n cannot add 1. Decide what an event shows when real events arrive.
 
+- Commit 19: Pixi scene, integer-scale stage and `build` in CI (Electron skeleton, steps 5 and 6).
+  - `renderer/stage/integer-scale.ts`: `computeIntegerScale` (1280x720 -> 2, 1366x768 -> 2, 1920x1080 -> 3, 2560x1440 -> 4, 3840x2160 -> 6; never below 1; invalid sizes -> 1).
+    `Stage` centres the 640x360 area, exposes `--scale` through the CSSOM (an inline style attribute would need `unsafe-inline`), and fills the letterbox with a pattern. Layouts are written in game pixels (`var(--px)`).
+  - `renderer/scene/`: plain-TypeScript Pixi scene (ADR 0014): `createGameScene(host, store)` observes the store, never calls the core; `sceneViewOf` is the pure state-to-view mapping (tested).
+    Placeholder art is coloured rectangles (`Texture.WHITE` sprites). `pixi.js/unsafe-eval` is imported first because the CSP forbids `eval`. `stage/scene-host.tsx` mounts and disposes it (StrictMode-safe).
+  - Dev window uses `useContentSize` so the 1280x720 content area gives x2 instead of x1.
+  - Lint: new `scene` block (Pixi allowed; no React/Zustand/i18n/UI, no engine calls); 5 more probe cases.
+  - CI now runs `pnpm build` on Ubuntu and Windows.
+  - Verified on the built app: 1920x1080 viewport gives scale 3, a 640x360 canvas displayed at 1920x1080, WebGL2 active, no console or CSP error, the figure moves one step per week. Screenshot: `docs/verification/step5-scene.png`.
+
 ## Open technical points
 
 - Scene rules (Pixi allowed, no `applyCommand`, types only from core) come with the Pixi scene (step 5): today the "rest of renderer" block applies to `scene/`.

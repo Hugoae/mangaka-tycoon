@@ -1,4 +1,15 @@
-/* Temporary placeholder styling: the real look (pixel art, fonts) arrives with the UI milestone. */
+/* Layouts are written in "game pixels": one game pixel is `var(--px)`, i.e. `--scale` real pixels (ADR 0010).
+   Placeholder styling: the real look (pixel art, pixel font) arrives with the UI milestone. */
+:root {
+  --scale: 1;
+  --color-letterbox-a: #0e0c14;
+  --color-letterbox-b: #14121c;
+  --color-panel: #1b1729;
+  --color-line: #f0e8d8;
+  --color-text: #f0e8d8;
+  --color-muted: #9b93ad;
+}
+
 html,
 body,
 #root {
@@ -7,29 +18,75 @@ body,
 }
 
 body {
-  background: #14121c;
-  color: #f0e8d8;
+  background: var(--color-letterbox-a);
+  color: var(--color-text);
   font-family: system-ui, sans-serif;
+  overflow: hidden;
+}
+
+/* Letterbox: a game pattern rather than plain black (ADR 0010). */
+.viewport {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background-color: var(--color-letterbox-a);
+  background-image: repeating-conic-gradient(
+    var(--color-letterbox-b) 0% 25%,
+    var(--color-letterbox-a) 0% 50%
+  );
+  background-size: 16px 16px;
+}
+
+.stage {
+  --px: calc(1px * var(--scale));
+  position: relative;
+  width: calc(640 * var(--px));
+  height: calc(360 * var(--px));
+  overflow: hidden;
+}
+
+.scene,
+.scene canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: pixelated;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  font-size: calc(9 * var(--px));
+  line-height: 1.3;
 }
 
 .hub {
   box-sizing: border-box;
+  position: absolute;
+  top: calc(8 * var(--px));
+  right: calc(8 * var(--px));
+  width: calc(300 * var(--px));
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 24px;
-  padding: 48px;
+  align-items: stretch;
+  gap: calc(8 * var(--px));
+  padding: calc(8 * var(--px));
+  border: var(--px) solid var(--color-line);
+  background: var(--color-panel);
 }
 
 .hub__date {
   margin: 0;
-  font-size: 32px;
+  font-size: calc(12 * var(--px));
   font-weight: 600;
 }
 
 .hub__next-week {
-  padding: 12px 24px;
-  border: 2px solid #f0e8d8;
+  padding: calc(4 * var(--px)) calc(8 * var(--px));
+  border: var(--px) solid var(--color-line);
   background: transparent;
   color: inherit;
   font: inherit;
@@ -38,8 +95,8 @@ body {
 
 .hub__next-week:hover,
 .hub__next-week:focus-visible {
-  background: #f0e8d8;
-  color: #14121c;
+  background: var(--color-line);
+  color: var(--color-panel);
 }
 
 .hub__log ul {
