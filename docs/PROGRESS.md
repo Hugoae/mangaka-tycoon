@@ -146,6 +146,20 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
     (2) A DevTools `Runtime.evaluate` bypasses the page CSP unless `allowUnsafeEvalBlockedByCSP: false` is passed: my first `eval` test was a false negative.
   - Not verified automatically: F11 (injected key events do not go through the main-process input hook). To check by hand.
 
+- Commit 16: `PlatformApi` v0, preload and validated IPC.
+  - `shared/ipc.ts`: typed endpoints (channel + zod request and response schemas), `callEndpoint` (validates before sending and after receiving) and `createValidatedHandler` (validates on the main side).
+    `shared/platform-api.ts`: `PlatformApi` (`getAppInfo`, `setFullscreen`) and its IPC contract. Saves, mods and settings come with their milestones.
+  - `preload/`: `createPlatformApi(invoke)` (pure, tested with a fake host) and the `contextBridge` exposure as `window.platform`. Nothing else is exposed (no `ipcRenderer`, no `electron`).
+  - `main/ipc/register-ipc.ts`: every call must come from the main frame of an app page (`app://game`, or the dev server in `pnpm dev`), then goes through schema validation.
+    `security/navigation-policy.ts`: `isUrlOfApp` (renamed from `isAllowedNavigation`, now also used for IPC senders) and `allowedOriginsFor`.
+  - `renderer/platform/platform.ts`: `getPlatform()` (the renderer only knows the interface; it fails loudly if the preload did not run).
+  - `window.ts` now reports a failing preload on stderr (`preload-error`).
+  - `zod` added to `game` (devDependency, bundled). 106 tests in total.
+  - Verified on the built app through the DevTools protocol: `window.platform` has exactly `getAppInfo` and `setFullscreen`; app info returned; a wrong argument is rejected before it is sent;
+    `setFullscreen(false/true)` really toggles the window (784x535 windowed, 1920x1080 fullscreen).
+  - **Open point**: on the very first run after a fresh build, `window.platform` was missing once, with no error reported. It did not reproduce in 5 further launches
+    (all fine, `preload-error` silent), and I could not explain it. If it shows up again, the `preload-error` message on stderr is the first thing to read.
+
 ## Open technical points
 
 - `boundaries` rules for the layers inside `game` (`ui`, `store`, `scene`, `main`, `preload`) are added with the Electron skeleton, once those folders exist.

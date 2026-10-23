@@ -1,3 +1,5 @@
+import { APP_ORIGIN } from "../protocol/app-url";
+
 /** `scheme://host[:port]` of a URL, or `null` when it cannot be parsed. */
 export function originOf(url: string): string | null {
   try {
@@ -10,10 +12,22 @@ export function originOf(url: string): string | null {
 }
 
 /**
- * True when the window may navigate to `url`: only pages of the app itself (ADR 0009). Everything
- * else (web sites, `file:`, `javascript:`) is refused.
+ * Origins of the pages that belong to the app: `app://game`, plus the Vite dev server when
+ * `pnpm dev` is running (`devServerUrl` is only set then).
  */
-export function isAllowedNavigation(url: string, allowedOrigins: readonly string[]): boolean {
+export function allowedOriginsFor(devServerUrl: string | undefined): readonly string[] {
+  const devOrigin = devServerUrl === undefined ? null : originOf(devServerUrl);
+  return devOrigin === null ? [APP_ORIGIN] : [APP_ORIGIN, devOrigin];
+}
+
+/**
+ * True when `url` belongs to the app. It decides where a window may navigate (ADR 0009) and which
+ * IPC senders are trusted: web sites, `file:` and `javascript:` URLs never are.
+ */
+export function isUrlOfApp(url: string | undefined, allowedOrigins: readonly string[]): boolean {
+  if (url === undefined) {
+    return false;
+  }
   const origin = originOf(url);
   return origin !== null && allowedOrigins.includes(origin);
 }

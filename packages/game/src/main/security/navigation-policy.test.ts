@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { isAllowedNavigation, originOf } from "./navigation-policy";
+import { allowedOriginsFor, isUrlOfApp, originOf } from "./navigation-policy";
 
 const APP = ["app://game"];
 
@@ -18,10 +18,24 @@ describe("originOf", () => {
   });
 });
 
-describe("isAllowedNavigation", () => {
-  it("allows pages of the app", () => {
-    expect(isAllowedNavigation("app://game/index.html", APP)).toBe(true);
-    expect(isAllowedNavigation("app://game/other/page.html#x", APP)).toBe(true);
+describe("allowedOriginsFor", () => {
+  it("only allows the app in production", () => {
+    expect(allowedOriginsFor(undefined)).toEqual(APP);
+  });
+
+  it("also allows the dev server in development", () => {
+    expect(allowedOriginsFor("http://localhost:5173/")).toEqual([...APP, "http://localhost:5173"]);
+  });
+
+  it("ignores an unparsable dev server URL instead of allowing it", () => {
+    expect(allowedOriginsFor("not a url")).toEqual(APP);
+  });
+});
+
+describe("isUrlOfApp", () => {
+  it("accepts pages of the app", () => {
+    expect(isUrlOfApp("app://game/index.html", APP)).toBe(true);
+    expect(isUrlOfApp("app://game/other/page.html#x", APP)).toBe(true);
   });
 
   it.each([
@@ -34,12 +48,16 @@ describe("isAllowedNavigation", () => {
     "not a url",
     "",
   ])("refuses %j", (url) => {
-    expect(isAllowedNavigation(url, APP)).toBe(false);
+    expect(isUrlOfApp(url, APP)).toBe(false);
   });
 
-  it("allows the dev server only when it is listed", () => {
+  it("refuses a missing URL", () => {
+    expect(isUrlOfApp(undefined, APP)).toBe(false);
+  });
+
+  it("accepts the dev server only when it is listed", () => {
     const allowed = [...APP, "http://localhost:5173"];
-    expect(isAllowedNavigation("http://localhost:5173/", allowed)).toBe(true);
-    expect(isAllowedNavigation("http://localhost:9999/", allowed)).toBe(false);
+    expect(isUrlOfApp("http://localhost:5173/", allowed)).toBe(true);
+    expect(isUrlOfApp("http://localhost:9999/", allowed)).toBe(false);
   });
 });

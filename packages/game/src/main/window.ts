@@ -28,6 +28,11 @@ export function createMainWindow(devServerUrl: string | undefined): BrowserWindo
     },
   });
 
+  // Without its preload the renderer has no PlatformApi and cannot work: make that visible.
+  window.webContents.on("preload-error", (_event, preloadPath, error) => {
+    process.stderr.write(`Preload script failed to load (${preloadPath}): ${error.message}\n`);
+  });
+
   window.webContents.on("before-input-event", (event, input) => {
     if (input.type === "keyDown" && input.key === FULLSCREEN_KEY) {
       window.setFullScreen(!window.isFullScreen());
