@@ -59,6 +59,13 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
   - Verified with a throw-away file in `core`: 8 expected errors (DOM, Node, unchecked index, enum, exact optional, missing return). The file was deleted.
     This manual probe becomes an automated test with the lint boundary tests.
 
+- Commit 4: 13 ADRs in `docs/adr/` (index in `docs/adr/README.md`), one per decision:
+  TypeScript 6.0, JSONC, package dependency direction, immer, sfc32 derived streams, Zustand, i18next, PlatformApi,
+  Electron 44 + `app://`, 640x360 scaling, electron-vite exit strategy, 48-week calendar, supply-chain policy.
+  - ADR 0003 refines `AGENTS.md` 5.2 (`content -> core` for types). `AGENTS.md` has not been edited: awaiting Hugo's approval to align it.
+  - ADR 0005 stores only the seed in saves (streams are derived from seed, week and system), which replaces "serialise the PRNG state" of 5.3.2 with an equivalent guarantee.
+  - ADR 0010 stays "pending verification" until the skeleton proves pixel-perfect rendering at 100%, 125% and 150%.
+
 ## Open technical points
 
 - `tools` will run TypeScript on Node or through a runner (`tsx` / Vite). Relative imports are extensionless for now (bundler resolution);
@@ -67,5 +74,5 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
 
 ## Next step
 
-- Commit 4: first ADRs (`docs/adr/0001` to `0009`), including the electron-vite exit strategy.
-- Then, in order of section 11.2: ESLint + Prettier + Husky, Vitest, CI, Cursor rules, `docs/ARCHITECTURE.md`, Electron skeleton, smoke tests.
+- Commit 5: ESLint (flat config, typescript-eslint strict, `core` restrictions, boundaries), Prettier, Husky + lint-staged.
+- Then, in order of section 11.2: Vitest + coverage threshold, CI, Cursor rules, `docs/ARCHITECTURE.md`, Electron skeleton, smoke tests.
