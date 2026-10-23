@@ -1,4 +1,4 @@
-import { isAbsolute, join, relative, resolve } from "node:path";
+import { isAbsolute, join, relative, resolve, sep } from "node:path";
 
 import { describe, expect, it } from "vitest";
 
@@ -6,9 +6,13 @@ import { APP_ENTRY_URL, resolveAppRequest } from "./app-url";
 
 const ROOT = resolve("renderer-root");
 
+/**
+ * Segment-based on purpose: on POSIX, `..\..\x` is a plain file name inside the root, and a name
+ * that merely starts with two dots (`..foo`) is not a parent directory either.
+ */
 function isInsideRoot(path: string): boolean {
   const fromRoot = relative(ROOT, path);
-  return !fromRoot.startsWith("..") && !isAbsolute(fromRoot);
+  return fromRoot.split(sep)[0] !== ".." && !isAbsolute(fromRoot);
 }
 
 describe("resolveAppRequest", () => {
