@@ -2,38 +2,26 @@ import { join } from "node:path";
 
 import { app, BrowserWindow } from "electron";
 
-const DEV_WINDOW_WIDTH = 1280;
-const DEV_WINDOW_HEIGHT = 720;
+import { handleAppProtocol, registerAppScheme } from "./protocol/app-protocol";
+import { installSecurity } from "./security/install-security";
+import { createMainWindow } from "./window";
 
-function createMainWindow(): BrowserWindow {
-  const window = new BrowserWindow({
-    width: DEV_WINDOW_WIDTH,
-    height: DEV_WINDOW_HEIGHT,
-    webPreferences: {
-      // Security baseline (ADR 0009), spelled out even where it is already the default.
-      contextIsolation: true,
-      nodeIntegration: false,
-      sandbox: true,
-      preload: join(import.meta.dirname, "../preload/index.cjs"),
-    },
-  });
+// Set only by `electron-vite dev`: the Vite dev server serving the renderer.
+const devServerUrl = process.env["ELECTRON_RENDERER_URL"];
 
-  const devServerUrl = process.env["ELECTRON_RENDERER_URL"];
-  if (devServerUrl !== undefined) {
-    void window.loadURL(devServerUrl);
-  } else {
-    // Transitional: replaced by the `app://` protocol in the next commit (ADR 0009).
-    void window.loadFile(join(import.meta.dirname, "../renderer/index.html"));
-  }
-  return window;
-}
+// Render one CSS pixel as one physical pixel whatever the Windows display scale, so the game can
+// compute its own integer scale (ADR 0010). Must be set before the app is ready.
+app.commandLine.appendSwitch("force-device-scale-factor", "1");
+registerAppScheme();
 
 void app.whenReady().then(() => {
-  createMainWindow();
+  installSecurity(devServerUrl);
+  handleAppProtocol(join(import.meta.dirname, "../renderer"));
+  createMainWindow(devServerUrl);
 
   app.on("activate", () => {
     if (BrowserWindow.getAllWindows().length === 0) {
-      createMainWindow();
+      createMainWindow(devServerUrl);
     }
   });
 });

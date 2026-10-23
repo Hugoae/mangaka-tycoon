@@ -132,6 +132,20 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
     (3) electron-vite builds the renderer unminified by default; left as is, to review at M6.
   - Main still loads the page with `loadFile` (transitional): `app://` replaces it in the next commit.
 
+- Commit 15: `app://` protocol and security baseline in the main process (`packages/game/src/main`).
+  - `protocol/app-url.ts` (pure): maps `app://game/...` to a file inside the renderer root, refuses foreign scheme or host, NUL bytes, bad escapes and any path leaving the root.
+    `protocol/app-protocol.ts` registers the scheme (standard, secure, fetch) and serves files with the production CSP.
+  - `security/csp.ts` (pure): `default-src 'none'`, scripts and connections `'self'`, no `unsafe-eval`, no inline script, no framing. Dev adds only the dev server origin and inline script/style for hot reload.
+    `security/navigation-policy.ts` + `install-security.ts`: navigation only inside the app, no new window, no webview, all browser permissions denied.
+  - `window.ts`: borderless fullscreen in production and `pnpm start`, 1280x720 window in `pnpm dev`, F11 toggles. `force-device-scale-factor=1` is set in `index.ts`.
+  - 40 unit tests (path traversal, CSP, navigation). Verified by sabotage: neutralising the root check makes 5 traversal tests fail.
+  - Verified on the running app through the DevTools protocol (production): served from `app://game/index.html`, `eval` and inline script blocked, CSP header present,
+    traversal refused (403), missing file 404, remote fetch blocked, `window.open` returns null, navigation to an external site refused, no `require`/`process` in the page.
+    Dev mode: same except inline script allowed by design.
+  - Findings: (1) `net.fetch` of a missing file rejects and also emits an unhandled error that aborts the response (`ERR_UNEXPECTED`): the handler checks the file with `stat` first.
+    (2) A DevTools `Runtime.evaluate` bypasses the page CSP unless `allowUnsafeEvalBlockedByCSP: false` is passed: my first `eval` test was a false negative.
+  - Not verified automatically: F11 (injected key events do not go through the main-process input hook). To check by hand.
+
 ## Open technical points
 
 - `boundaries` rules for the layers inside `game` (`ui`, `store`, `scene`, `main`, `preload`) are added with the Electron skeleton, once those folders exist.
