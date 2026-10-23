@@ -82,9 +82,17 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
   - Husky: `pre-commit` runs lint-staged then `pnpm typecheck`; `commit-msg` rejects non Conventional Commits messages (no extra dependency).
   - Scripts: `pnpm lint`, `pnpm format`, `pnpm format:check`, `pnpm typecheck`.
 
+- Commit 7: Vitest 5.
+  - `pnpm test`, `pnpm test:watch`, `pnpm test:coverage`. Config in `vitest.config.js` (tests live next to the code, `*.test.ts`).
+  - Coverage (v8) restricted to `packages/core/src`, thresholds 90% (statements, branches, functions, lines). Files without code (empty `index.ts`) count for nothing.
+    Verified: an untested function in `core` makes `pnpm test:coverage` fail.
+  - `tools/src/lint-rules.test.ts`: 25 tests that lint probe code from text (nothing written to disk) with the real `eslint.config.js`.
+    19 violations must be reported by the expected rule; 6 allowed cases must not trigger it. Fatal parser errors fail the test, so a case cannot pass for the wrong reason.
+    Verified by sabotage: setting `checkAllOrigins: false` makes 4 boundary tests fail. This covers the "boundary rules really break" test of section 11.2, point 9.
+  - `pre-commit` now runs lint-staged, `pnpm typecheck` and `pnpm test`.
+
 ## Open technical points
 
-- The lint and boundary checks were verified by hand. They become automated tests with Vitest (next commit).
 - `boundaries` rules for the layers inside `game` (`ui`, `store`, `scene`, `main`, `preload`) are added with the Electron skeleton, once those folders exist.
 - Naming conventions (kebab-case files) are not enforced yet; adding `eslint-plugin-unicorn` for `filename-case` needs a justification (dependency size).
 
@@ -94,5 +102,5 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
 
 ## Next step
 
-- Commit 7: Vitest with a coverage threshold on `core`, and automated tests proving that lint and boundary rules fail when violated.
-- Then, in order of section 11.2: CI, Cursor rules, `docs/ARCHITECTURE.md`, Electron skeleton, smoke tests.
+- Commit 8: GitHub Actions CI (install, lint, typecheck, test with coverage, build).
+- Then, in order of section 11.2: Cursor rules, `docs/ARCHITECTURE.md`, Electron skeleton (with `advanceWeek` and its determinism test), smoke tests.
