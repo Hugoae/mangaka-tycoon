@@ -3,11 +3,11 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "lib": ["ES2023", "DOM", "DOM.Iterable"],
-    "types": [],
+    "types": ["vite/client"],
     "jsx": "react-jsx",
     "rootDir": "src",
     "outDir": "dist/web"
   },
-  "include": ["src/renderer", "src/shared"],
+  "include": ["src/renderer", "src/renderer/**/*.json", "src/shared"],
   "references": [{ "path": "../core" }, { "path": "../content" }]
 }

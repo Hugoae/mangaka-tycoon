@@ -1,0 +1,49 @@
+/* Temporary placeholder styling: the real look (pixel art, fonts) arrives with the UI milestone. */
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  background: #14121c;
+  color: #f0e8d8;
+  font-family: system-ui, sans-serif;
+}
+
+.hub {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 48px;
+}
+
+.hub__date {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 600;
+}
+
+.hub__next-week {
+  padding: 12px 24px;
+  border: 2px solid #f0e8d8;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.hub__next-week:hover,
+.hub__next-week:focus-visible {
+  background: #f0e8d8;
+  color: #14121c;
+}
+
+.hub__log ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

@@ -20,9 +20,12 @@
     "@vitejs/plugin-react": "^6.1.2",
     "electron": "^44.9.2",
     "electron-vite": "^6.0.0",
+    "i18next": "^26.5.3",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
+    "react-i18next": "^17.1.0",
     "vite": "^8.3.4",
-    "zod": "^4.6.7"
+    "zod": "^4.6.7",
+    "zustand": "^5.0.15"
   }
 }

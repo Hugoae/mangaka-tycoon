@@ -1,0 +1,10 @@
+{
+  "hub": {
+    "date": "{{month}} {{year}} · semaine {{week}}",
+    "nextWeek": "Semaine suivante",
+    "eventLog": "Journal"
+  },
+  "event": {
+    "weekAdvanced": "Une nouvelle semaine commence."
+  }
+}

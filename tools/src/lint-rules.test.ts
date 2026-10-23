@@ -1,7 +1,8 @@
-import { resolve } from "node:path";
-
-import { ESLint } from "eslint";
+import type { ESLint } from "eslint";
 import { beforeAll, describe, expect, it } from "vitest";
+
+import { createProbeLinter, reportedRules } from "./lint-harness";
+import type { ProbeCase } from "./lint-harness";
 
 /**
  * These tests prove that the architecture rules of AGENTS.md really fail the lint when violated.
@@ -9,21 +10,12 @@ import { beforeAll, describe, expect, it } from "vitest";
  * Files are linted from text: nothing is written to disk.
  */
 
-const REPOSITORY_ROOT = resolve(import.meta.dirname, "../..");
-
 const CORE_FILE = "packages/core/src/probe.ts";
 const CORE_SYSTEM_FILE = "packages/core/src/systems/probe.ts";
 const CONTENT_FILE = "packages/content/src/probe.ts";
 const TOOLS_FILE = "tools/src/probe.ts";
 
-interface ViolationCase {
-  readonly name: string;
-  readonly file: string;
-  readonly code: string;
-  readonly ruleId: string;
-}
-
-const MUST_FAIL: readonly ViolationCase[] = [
+const MUST_FAIL: readonly ProbeCase[] = [
   // --- core: purity and determinism (AGENTS.md 5.2, 5.3.1) ---
   {
     name: "core imports react",
@@ -143,15 +135,7 @@ const MUST_FAIL: readonly ViolationCase[] = [
   },
 ];
 
-interface AllowedCase {
-  readonly name: string;
-  readonly file: string;
-  readonly code: string;
-  /** The rule that must NOT report anything, proving the allow-list is not simply blocking everything. */
-  readonly ruleId: string;
-}
-
-const MUST_PASS: readonly AllowedCase[] = [
+const MUST_PASS: readonly ProbeCase[] = [
   {
     name: "core imports an allowed pure library",
     file: CORE_FILE,
@@ -194,45 +178,18 @@ describe("architecture lint rules", () => {
   let eslint: ESLint;
 
   beforeAll(() => {
-    eslint = new ESLint({
-      cwd: REPOSITORY_ROOT,
-      // The probe files do not exist on disk, so typescript-eslint must treat them as
-      // "default project" files. Everything else comes from the real eslint.config.js.
-      overrideConfig: {
-        languageOptions: {
-          parserOptions: {
-            projectService: {
-              allowDefaultProject: [CORE_FILE, CORE_SYSTEM_FILE, CONTENT_FILE, TOOLS_FILE],
-              defaultProject: "tsconfig.base.json",
-              maximumDefaultProjectFileMatchCount_THIS_WILL_SLOW_DOWN_LINTING: 10,
-            },
-            tsconfigRootDir: REPOSITORY_ROOT,
-          },
-        },
-      },
-    });
+    eslint = createProbeLinter([CORE_FILE, CORE_SYSTEM_FILE, CONTENT_FILE, TOOLS_FILE]);
   });
-
-  async function reportedRules(file: string, code: string): Promise<readonly string[]> {
-    const [result] = await eslint.lintText(code, { filePath: resolve(REPOSITORY_ROOT, file) });
-    if (result === undefined) {
-      throw new Error(`ESLint returned no result for ${file}`);
-    }
-    // A parsing or configuration error has no rule id: it would make a "must fail" case pass for the wrong reason.
-    const fatal = result.messages.filter((message) => message.fatal === true);
-    expect(fatal, `fatal ESLint errors for ${file}`).toEqual([]);
-    return result.messages.flatMap((message) => (message.ruleId === null ? [] : [message.ruleId]));
-  }
 
   describe("violations must fail the lint", () => {
     it.each(MUST_FAIL)("$name -> $ruleId", async ({ file, code, ruleId }) => {
-      expect(await reportedRules(file, code)).toContain(ruleId);
+      expect(await reportedRules(eslint, file, code)).toContain(ruleId);
     });
   });
 
   describe("allowed code must not trigger the rule", () => {
     it.each(MUST_PASS)("$name", async ({ file, code, ruleId }) => {
-      expect(await reportedRules(file, code)).not.toContain(ruleId);
+      expect(await reportedRules(eslint, file, code)).not.toContain(ruleId);
     });
   });
 });

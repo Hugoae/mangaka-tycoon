@@ -8,6 +8,7 @@ import boundaries from "eslint-plugin-boundaries";
 import tseslint from "typescript-eslint";
 
 import { boundariesRuleOptions, boundariesSettings } from "./eslint/boundaries.js";
+import { gameLayerConfigs } from "./eslint/game-layers.js";
 
 /** Every Node.js built-in, with and without the `node:` prefix. */
 const NODE_BUILTINS = builtinModules.flatMap((name) => [name, `node:${name}`]);
@@ -206,6 +207,9 @@ export default defineConfig(
     settings: boundariesSettings,
     rules: { "boundaries/dependencies": ["error", boundariesRuleOptions] },
   },
+
+  // --- Layers inside the game package: main, preload, shared, renderer store / UI (eslint/game-layers.js). ---
+  ...gameLayerConfigs,
 
   // --- The build tool requires a default export in its config file (AGENTS.md 9.1: "sauf contrainte d'outil"). ---
   {
