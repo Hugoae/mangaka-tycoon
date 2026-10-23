@@ -23,7 +23,8 @@ jobs:
       # Linux is the reference; Windows is the development platform and catches path and line-ending bugs.
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, windows-latest]
+        # Pinned images keep the CI reproducible; bump them deliberately (`ubuntu-latest` moves to Ubuntu 26).
+        os: [ubuntu-24.04, windows-2025]
     env:
       # Corepack would otherwise wait for a confirmation before downloading pnpm.
       COREPACK_ENABLE_DOWNLOAD_PROMPT: "0"
