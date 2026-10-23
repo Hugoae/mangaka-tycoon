@@ -112,6 +112,17 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
   - The order of systems inside a tick is explicitly left open (M3, Hugo decides). The diagram is a flow, not a specification.
   - Diagrams checked with the real mermaid 11 engine (parse and render), not only by eye.
 
+- Commit 13: minimal core for the skeleton (`packages/core`), no gameplay.
+  - `calendar` (ADR 0012: zero-based `WeekIndex`, `weekToDate`, `isMonthEnd`), `GameState = { version, seed, week }` with `createNewGame`,
+    `GameEvent` (`weekAdvanced`, carries an i18n key and params), `Command` (`advanceWeek`) with `applyCommand`, `advanceWeek` through immer (output frozen).
+  - Decisions taken with Hugo: `advanceWeek(state)` has **no `content` parameter yet** (added with the first system that needs it, to avoid an invented placeholder type);
+    **no RNG yet** (sfc32 arrives with M1), so the "deterministic for a seed" test checks purity and reproducibility, not random draws.
+    The seeded determinism test must be added with the PRNG.
+  - Calendar tested exhaustively over all 1,920 weeks of 40 years against an independent walk (the domain is finite, so no `fast-check` needed yet).
+  - `immer` added to `core` (ADR 0004). 46 tests, 100% coverage on `core`.
+  - `assertNever` receives `command.kind`, because TypeScript does not narrow a single-member union itself.
+    One justified `eslint-disable` in `applyCommand` (single-member union): it turns into a lint error by itself as soon as a second command exists, and must then be removed.
+
 ## Open technical points
 
 - `boundaries` rules for the layers inside `game` (`ui`, `store`, `scene`, `main`, `preload`) are added with the Electron skeleton, once those folders exist.
@@ -123,6 +134,7 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
 
 ## Next step
 
-- Electron skeleton (section 11.2, point 8), split into small commits: `core` minimal (`GameState`, calendar, `advanceWeek`, determinism test),
-  then the `game` package (electron-vite, React, Pixi canvas 640x360, `app://`, preload and `PlatformApi`), then `build` in CI.
+- Electron skeleton (section 11.2, point 8), remaining commits: the `game` package (electron-vite, React, Pixi canvas 640x360, `app://`,
+  preload and `PlatformApi`, "Semaine suivante" button calling `applyCommand`), then `build` in CI. Plan to submit to Hugo first
+  (questions: where the few French strings live before i18next is wired, and the layout of the `game` tsconfig projects).
 - Then pixel-perfect verification at 100%, 125% and 150% Windows scaling (ADR 0010), and the smoke tests that remain.
