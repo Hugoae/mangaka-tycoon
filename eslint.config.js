@@ -207,6 +207,12 @@ export default defineConfig(
     rules: { "boundaries/dependencies": ["error", boundariesRuleOptions] },
   },
 
+  // --- The build tool requires a default export in its config file (AGENTS.md 9.1: "sauf contrainte d'outil"). ---
+  {
+    files: ["packages/game/electron.vite.config.ts"],
+    rules: { "no-restricted-syntax": "off" },
+  },
+
   // --- Plain JavaScript config files: no type information, default exports allowed. ---
   {
     files: ["**/*.js", "**/*.mjs", "**/*.cjs"],

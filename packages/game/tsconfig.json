@@ -1,13 +1,6 @@
 {
-  "extends": "../../tsconfig.base.json",
-  "compilerOptions": {
-    // TODO(app-skeleton): split into main/preload (Node) and renderer (DOM) projects
-    // when the Electron skeleton is added.
-    "lib": ["ES2023", "DOM", "DOM.Iterable"],
-    "types": [],
-    "rootDir": "src",
-    "outDir": "dist"
-  },
-  "include": ["src"],
-  "references": [{ "path": "../core" }, { "path": "../content" }]
+  // Solution file: the main process and the renderer have different environments (Node vs DOM),
+  // so they are separate projects.
+  "files": [],
+  "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.web.json" }]
 }

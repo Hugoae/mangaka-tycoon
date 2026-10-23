@@ -5,8 +5,23 @@
   "description": "Electron application: main process, preload, and React + PixiJS renderer.",
   "license": "UNLICENSED",
   "type": "module",
-  "dependencies": {
+  "main": "./out/main/index.js",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "start": "electron-vite preview"
+  },
+  "devDependencies": {
     "@mangaka/content": "workspace:*",
-    "@mangaka/core": "workspace:*"
+    "@mangaka/core": "workspace:*",
+    "@types/node": "~24.19.2",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "electron": "^44.9.2",
+    "electron-vite": "^6.0.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "vite": "^8.3.4"
   }
 }

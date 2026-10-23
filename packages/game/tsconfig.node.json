@@ -1,0 +1,12 @@
+{
+  // Main process, preload, shared contracts and build config: Node environment, no DOM.
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023"],
+    "types": ["node"],
+    "rootDir": ".",
+    "outDir": "dist/node"
+  },
+  "include": ["electron.vite.config.ts", "src/main", "src/preload", "src/shared"],
+  "references": [{ "path": "../core" }, { "path": "../content" }]
+}

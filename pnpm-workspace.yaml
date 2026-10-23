@@ -10,7 +10,10 @@ minimumReleaseAge: 4320
 # Fail the install when an unreviewed dependency ships a build script.
 # Every allowed build is listed here explicitly, with its reason.
 strictDepBuilds: true
-allowBuilds: {}
+allowBuilds:
+  # Explicitly denied (reviewed): no install script runs. The Electron binary is downloaded and
+  # checked against the checksums shipped in the package on the first launch of `electron`.
+  electron: false
 
 # Make `engines` in package.json a hard requirement, not a warning.
 engineStrict: true

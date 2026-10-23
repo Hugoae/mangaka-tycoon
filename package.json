@@ -7,6 +7,9 @@
   "type": "module",
   "packageManager": "pnpm@11.28.6",
   "scripts": {
+    "dev": "pnpm --filter @mangaka/game dev",
+    "build": "pnpm --filter @mangaka/game build",
+    "start": "pnpm --filter @mangaka/game start",
     "typecheck": "tsc -b",
     "test": "vitest run",
     "test:watch": "vitest",

@@ -1,0 +1,13 @@
+{
+  // Renderer and shared contracts: browser environment, no Node.
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "lib": ["ES2023", "DOM", "DOM.Iterable"],
+    "types": [],
+    "jsx": "react-jsx",
+    "rootDir": "src",
+    "outDir": "dist/web"
+  },
+  "include": ["src/renderer", "src/shared"],
+  "references": [{ "path": "../core" }, { "path": "../content" }]
+}

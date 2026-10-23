@@ -21,7 +21,13 @@ Adopt **electron-vite** (dev server, HMR, build of the three targets) and **elec
 2. No source file imports from `electron-vite` or relies on its special import suffixes (such as `?asset`). Assets are referenced through our own helpers.
 3. The `app://` protocol and the security baseline ([ADR 0009](0009-electron-runtime-and-security.md)) live in application code, not in build config.
 4. `electron-builder` is configured by its own file and does not depend on `electron-vite`.
-5. Output layout is documented here: `out/main/index.js`, `out/preload/index.js`, `out/renderer/**`.
+5. Output layout is documented here: `out/main/index.js` (ES module), `out/preload/index.cjs` (CommonJS), `out/renderer/**`.
+
+Two build settings are part of the contract, because they are properties of the application and not of the tool, and any replacement must reproduce them:
+
+- **Everything is bundled** (`externalizeDeps: false` for main and preload; every library is a `devDependency`). A sandboxed preload cannot `require` third-party packages at runtime.
+- **The preload is CommonJS with a `.cjs` extension.** Electron only accepts an ES module preload when `sandbox` is `false` (ADR 0009 requires `true`), and the package itself is ESM.
+  The first build with electron-vite 6 produced `index.mjs`, so the format is set explicitly in the config.
 
 ### Exit plan
 

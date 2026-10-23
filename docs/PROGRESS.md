@@ -123,6 +123,15 @@ Source of truth for rules and vision: [`AGENTS.md`](../AGENTS.md).
   - `assertNever` receives `command.kind`, because TypeScript does not narrow a single-member union itself.
     One justified `eslint-disable` in `applyCommand` (single-member union): it turns into a lint error by itself as soon as a second command exists, and must then be removed.
 
+- Commit 14: `game` package scaffold (electron-vite 6, Electron 44.9.2, Vite 8.3.4, React 19.3.1). Window opens and React renders (checked on the built app through CDP).
+  - Plan for the whole skeleton validated with Hugo: i18next wired now (ADR 0007), `electron-builder` deferred to M6, windowed 1280x720 in dev and borderless fullscreen in production.
+  - `game` tsconfig split in `tsconfig.node.json` (main, preload, shared, build config) and `tsconfig.web.json` (renderer, shared), tied by a solution `tsconfig.json`.
+  - Root scripts: `pnpm dev`, `pnpm build`, `pnpm start` (build then run the production bundle).
+  - Findings: (1) electron-vite 6 emitted the preload as ES module `index.mjs`, which a sandboxed preload cannot load: format forced to CommonJS `index.cjs`, ADR 0011 amended.
+    (2) `pnpm` flagged an Electron build script; it is explicitly denied (`allowBuilds: electron: false`) and works: the binary downloads on first launch, checked against `checksums.json`.
+    (3) electron-vite builds the renderer unminified by default; left as is, to review at M6.
+  - Main still loads the page with `loadFile` (transitional): `app://` replaces it in the next commit.
+
 ## Open technical points
 
 - `boundaries` rules for the layers inside `game` (`ui`, `store`, `scene`, `main`, `preload`) are added with the Electron skeleton, once those folders exist.
